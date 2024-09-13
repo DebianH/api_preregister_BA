@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id         Int      @id @default(autoincrement())
+  nameOrganization String
+  ruc           Int      @unique
+  phone        String
+  email        String   @unique
+  // # Address as a nested model
+  address     Address?
+  purpose          String
+  dependentsBenefit String
+  motive            String
+  representative    Representative?
+  // # Coordinates as a nested model
+  coordinates     Coordinates?
+  numPreRegister  Int
+  stateRegister StateRegister @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  street      String
+  city        String   
+  neighborhood String
+  province    String
+  country     String @default("Ecuador")
+  // # Relationship to Organization model
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int @unique
+}
+
+model Coordinates {
+  id        Int      @id @default(autoincrement())
+  latitude  String
+  longitude String
+  // # Relationship to Organization model
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int @unique
+}
+
+model Representative {
+  id           Int     @id @default(autoincrement())
+  name         String
+  numDoc       String  @unique
+  role         String
+  email        String  @unique
+  phone        String
+  // # Relationship to Organization model
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int @unique
+}
+
+enum StateRegister {
+  PENDING
+  REVIEW
+  APPROVED
+  REJECTED
+}
