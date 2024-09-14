@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import organization from "./components/organization/network";
+import organization from "./routes/network";
 import cors from 'cors';
 dotenv.config();
 

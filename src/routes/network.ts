@@ -1,13 +1,11 @@
 import express, { Router } from "express";
 import { PrismaClient } from '@prisma/client'
-import { success } from "../../network/response";
-import { createOrganization, getAllOrganizations, getOrganizationById } from "./controller";
-const prisma = new PrismaClient();
-const router = Router();
+import { success } from "../network/response";
+import { createOrganization, getAllOrganizations, getOrganizationById } from "../components/organization/controller";
 
-router.get('/', (req, res) => {
-    success(req, res, "Hola mundo", 200);
-})
+const prisma = new PrismaClient();
+const router = express.Router();
+
 
 router.get('/all', getAllOrganizations)
 
