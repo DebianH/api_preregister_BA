@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { getAllOrganizations as fetchAllOrganizations, createOrganization as addNewOrganization  } from '../../services/services';
 const prisma = new PrismaClient();
 
+
 export const createOrganization = async (req: Request, res: Response) => {
     try {
         const data = req.body;
