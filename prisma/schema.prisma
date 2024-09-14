@@ -14,59 +14,202 @@ datasource db {
 }
 
 model Organization {
-  id         Int      @id @default(autoincrement())
-  nameOrganization String
-  ruc           Int      @unique
-  phone        String
-  email        String   @unique
-  // # Address as a nested model
-  address     Address?
-  purpose          String
-  dependentsBenefit String
-  motive            String
-  representative    Representative?
-  // # Coordinates as a nested model
-  coordinates     Coordinates?
-  numPreRegister  Int
-  stateRegister StateRegister @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 Int              @id @default(autoincrement())
+  nameOrganizationId Int              @unique
+  rucId              Int              @unique
+  phoneId            Int              @unique
+  emailId            Int              @unique
+  purposeId          Int              @unique
+  dependentsBenefitId Int             @unique
+  motiveId           Int              @unique
+  numPreRegisterId   Int              @unique
+  address            Address?
+  coordinates        Coordinates?
+  representative     Representative?
+  stateRegistration  stateRegistration    @default(PENDING)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  
+  nameOrganization   NameOrganization? @relation("NameOrganization", fields: [nameOrganizationId], references: [id])
+  ruc                Ruc?             @relation("Ruc", fields: [rucId], references: [id])
+  phone              Phone?           @relation("Phone", fields: [phoneId], references: [id])
+  email              Email?           @relation("Email", fields: [emailId], references: [id])
+  purpose            Purpose?         @relation("Purpose", fields: [purposeId], references: [id])
+  dependentsBenefit  DependentsBenefit? @relation("DependentsBenefit", fields: [dependentsBenefitId], references: [id])
+  motive             Motive?          @relation("Motive", fields: [motiveId], references: [id])
+  numPreRegister     NumPreRegister?  @relation("NumPreRegister", fields: [numPreRegisterId], references: [id])
+}
+
+model NameOrganization {
+  id                Int              @id @default(autoincrement())
+  text              String
+  state             Boolean
+  organization      Organization?    @relation("NameOrganization")
+}
+
+model Ruc {
+  id                Int              @id @default(autoincrement())
+  text              Int
+  state             Boolean
+  organization      Organization?    @relation("Ruc")
+}
+
+model Phone {
+  id                Int              @id @default(autoincrement())
+  text              String
+  state             Boolean
+  organization      Organization?    @relation("Phone")
+}
+
+model Email {
+  id                Int              @id @default(autoincrement())
+  text              String
+  state             Boolean
+  organization      Organization?    @relation("Email")
+}
+
+model Purpose {
+  id                Int              @id @default(autoincrement())
+  text              String
+  state             Boolean
+  organization      Organization?    @relation("Purpose")
+}
+
+model DependentsBenefit {
+  id                Int              @id @default(autoincrement())
+  text              Int
+  state             Boolean
+  organization      Organization?    @relation("DependentsBenefit")
+}
+
+model Motive {
+  id                Int              @id @default(autoincrement())
+  text              String
+  state             Boolean
+  organization      Organization?    @relation("Motive")
+}
+
+model NumPreRegister {
+  id                Int              @id @default(autoincrement())
+  text              Int
+  state             Boolean
+  organization      Organization?    @relation("NumPreRegister")
 }
 
 model Address {
-  id          Int      @id @default(autoincrement())
-  street      String
-  city        String   
-  neighborhood String
-  province    String
-  country     String @default("Ecuador")
-  // # Relationship to Organization model
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int @unique
+  id               Int              @id @default(autoincrement())
+  streetId         Int              @unique 
+  cityId           Int              @unique 
+  neighborhoodId   Int              @unique 
+  provinceId       Int              @unique 
+  countryId        Int              @unique 
+  organization     Organization?    @relation(fields: [organizationId], references: [id])
+  organizationId   Int              @unique
+  
+  street           Street?          @relation("Street", fields: [streetId], references: [id])
+  city             City?            @relation("City", fields: [cityId], references: [id])
+  neighborhood     Neighborhood?    @relation("Neighborhood", fields: [neighborhoodId], references: [id])
+  province         Province?        @relation("Province", fields: [provinceId], references: [id])
+  country          Country?         @relation("Country", fields: [countryId], references: [id])
+}
+
+model Street {
+  id               Int              @id @default(autoincrement())
+  text             String
+  state            Boolean
+  address          Address?         @relation("Street")
+}
+
+model City {
+  id               Int              @id @default(autoincrement())
+  text             String
+  state            Boolean
+  address          Address?         @relation("City")
+}
+
+model Neighborhood {
+  id               Int              @id @default(autoincrement())
+  text             String
+  state            Boolean
+  address          Address?         @relation("Neighborhood")
+}
+
+model Province {
+  id               Int              @id @default(autoincrement())
+  text             String
+  state            Boolean
+  address          Address?         @relation("Province")
+}
+
+model Country {
+  id               Int              @id @default(autoincrement())
+  text             String
+  state            Boolean
+  address          Address?         @relation("Country")
 }
 
 model Coordinates {
-  id        Int      @id @default(autoincrement())
-  latitude  String
-  longitude String
-  // # Relationship to Organization model
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int @unique
+  id               Int              @id @default(autoincrement())
+  latitude         String              
+  longitude        String              
+  organization     Organization?    @relation(fields: [organizationId], references: [id])
+  organizationId   Int              @unique
 }
 
 model Representative {
-  id           Int     @id @default(autoincrement())
-  name         String
-  numDoc       String  @unique
-  role         String
-  email        String  @unique
-  phone        String
-  // # Relationship to Organization model
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int @unique
+  id               Int              @id @default(autoincrement())
+  nameId           Int              @unique
+  numDocId         Int              @unique
+  roleId           Int              @unique
+  emailId          Int                @unique 
+  phoneId          Int                @unique 
+  organization     Organization?    @relation(fields: [organizationId], references: [id])
+  organizationId   Int              @unique
+
+  name             Name?                           @relation("Name",fields: [nameId], references: [id])
+  numDoc           NumDoc?                         @relation("NumDoc",fields: [numDocId], references: [id])
+  role             Role?                           @relation("Role",fields: [roleId], references: [id])
+  emailRepresentative           EmailRepresentative?            @relation("EmailRepresentative",fields: [emailId], references: [id])
+  phoneRepresentative            PhoneRepresentative?            @relation("PhoneRepresentative",fields: [phoneId], references: [id])
 }
 
-enum StateRegister {
+model Name {
+  id      Int     @id @default(autoincrement())
+  text   String
+  state   Boolean
+  representative Representative? @relation("Name")  
+}
+
+model NumDoc {
+  id      Int     @id @default(autoincrement())
+  text   String
+  state   Boolean
+  representative Representative? @relation("NumDoc")
+}
+
+model Role {
+  id      Int     @id @default(autoincrement())
+  text   String
+  state   Boolean
+  representative Representative? @relation("Role")
+}
+
+model EmailRepresentative {
+  id      Int     @id @default(autoincrement())
+  text   String
+  state   Boolean
+  representative Representative? @relation("EmailRepresentative")
+}
+
+model PhoneRepresentative {
+  id      Int     @id @default(autoincrement())
+  text   String
+  state   Boolean
+  representative Representative? @relation("PhoneRepresentative")
+}
+
+
+enum stateRegistration {
   PENDING
   REVIEW
   APPROVED
