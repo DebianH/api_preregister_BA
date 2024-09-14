@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
 
+//Create
 export const createOrganization = async (req: Request, res: Response) => {
     try {
         const { nameOrganization, ruc, phone, email, address, coordinates, representative, purpose, dependentsBenefit, motive, numPreRegister } = req.body;
-
+        
         const newOrganization = await prisma.organization.create({
             data: {
                 nameOrganization,
