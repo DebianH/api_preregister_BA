@@ -1,6 +1,6 @@
-#API PREREGISTRO DE NUEVAS ORGANIZACIONES
+# API PREREGISTRO DE NUEVAS ORGANIZACIONES
 
-###Chicos 
+### Chicos 
 - Necesito que el endpoint devuelva un json similar a este ejemplo
   const dataOnlyOrganizations = {
     "nameOrganization": { "text": "Fundación Esperanza", "state": true },
