@@ -13,7 +13,7 @@ router.get('/:id', Organization.getOrganizationById)
 
 router.post('/create', Organization.createOrganization)
 
-router.put(':/id', Organization.updatePutOrganization )
+router.put('/:id', Organization.updatePutOrganization )
 
 router.patch('/:id', Organization.updatePatchOrganization)
 

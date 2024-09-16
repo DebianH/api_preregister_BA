@@ -100,43 +100,18 @@ export const createOrganization = async (data: any) => {
   return Organization;
 };
 
-export const putDataOrganization = async (id: number, data: any) => {// complete update 
-  // Construir el objeto de actualización para address
-  const addressUpdateData = data.address ? buildUpdateData(data.address) : undefined;
-
-  // Construir el objeto de actualización para representative
-  const representativeUpdateData = data.representative ? buildUpdateData(data.representative) : undefined;
-
-  // Actualizar la organización
-  const updatedOrganization = await prisma.organization.update({
+export const putDataOrganization = async (id: number, data: any) => {
+  return await prisma.organization.update({ 
     where: { id },
     data: {
-      ...buildUpdateData(data),
-      address: addressUpdateData ? { update: addressUpdateData } : undefined,
-      representative: representativeUpdateData ? { update: representativeUpdateData } : undefined,
-    },
-  });
-
-  return updatedOrganization;
-}
-
-const buildUpdateData = (data: any) => {
-  const updateData: any = {};
-
-  for (const key in data) {
-    if (data[key] !== undefined) {
-      updateData[key] = { update: data[key] };
+      ...data,
     }
-  }
-
-  return updateData;
+  });
 };
 
-
 export const patchDataOrganization = async (id: number, data: any) => {
-  
   const updatedData = createPrismaUpdateObject(data);
-  
+
   if (!updatedData) {
     throw new Error("No valid data provided for update");
   }
@@ -147,12 +122,16 @@ export const patchDataOrganization = async (id: number, data: any) => {
   });
 };
 
-function createPrismaUpdateObject(data:any){
+function createPrismaUpdateObject(data: any) {
   const updateData: { [key: string]: any } = {};
 
-  for(const key in data){
-    if(data[key] && typeof data[key] === 'object' && !Array.isArray(data[key])){ 
-      if (key === 'address' || key === 'representative') {
+  for (const key in data) {
+    if (
+      data[key] &&
+      typeof data[key] === "object" &&
+      !Array.isArray(data[key])
+    ) {
+      if (key === "address" || key === "representative") {
         updateData[key] = {
           update: createPrismaUpdateObject(data[key]), // Llamada recursiva para objetos anidados
         };

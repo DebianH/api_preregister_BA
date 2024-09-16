@@ -111,7 +111,8 @@ export const updatePutOrganization = async ( req: Request, res: Response, next: 
     const productId = Number(id);
 
     const onUpdateOrganization = await service.putDataOrganization(productId, req.body);
-
+    
+    // TODO: Falta control de errores en cuestion de la entrada de datos en la actualizacion del JSON 
     res.status(200).json({
       message: "La Organizacion ha sido actualizada correctamente",
       response: onUpdateOrganization,
