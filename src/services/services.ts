@@ -1,6 +1,4 @@
-import { stateRegistration } from "@prisma/client";
 import prisma from "../utils/prismaClient";
-import { create } from "domain";
 
 export const fetchAllOrganizations = async () => {
   try {
@@ -14,10 +12,26 @@ export const fetchAllOrganizations = async () => {
         dependentsBenefit: true,
         motive: true,
         numPreRegister: true,
-        address: true,
+        address: {
+          include: {
+            street: true,
+            city: true,
+            neighborhood: true,
+            province: true,
+            country: true
+          }
+        },
         coordinates: true,
-        representative: true,
-      },
+        representative: {
+          include: {
+            name: true,
+            numDoc: true,
+            role: true,
+            emailRepresentative: true,
+            phoneRepresentative: true
+          }
+        }
+      }
     });
   } catch (error: any) {
     console.error("Error al obtener las organizaciones", error);
@@ -26,100 +40,298 @@ export const fetchAllOrganizations = async () => {
 };
 
 export const createOrganization = async (data: any) => {
-  const Organization = await prisma.organization.create({
-    data: {
-      ...data,
-      nameOrganization: {
-        create: data.nameOrganization,
-      },
-      ruc: {
-        create: data.ruc,
-      },
-      phone: {
-        create: data.phone,
-      },
-      email: {
-        create: data.email,
-      },
-      purpose: {
-        create: data.purpose,
-      },
-      dependentsBenefit: {
-        create: data.dependentsBenefit,
-      },
-      motive: {
-        create: data.motive,
-      },
-      numPreRegister: {
-        create: data.numPreRegister,
-      },
-      address: {
-        create: {
-          street: {
-            create: data.address.street,
-          },
-          city: {
-            create: data.address.city,
-          },
-          neighborhood: {
-            create: data.address.neighborhood,
-          },
-          province: {
-            create: data.address.province,
-          },
-          country: {
-            create: data.address.country,
-          },
+  try {
+    const newOrganization = await prisma.organization.create({
+      data: {
+        nameOrganization: {
+          create: {
+            text: data.nameOrganization.text,
+            state: data.nameOrganization.state
+          }
         },
-      },
-      coordinates: {
-        create: data.coordinates,
-      },
-      representative: {
-        create: {
-          name: {
-            create: data.representative.name,
-          },
-          numDoc: {
-            create: data.representative.numDoc,
-          },
-          role: {
-            create: data.representative.role,
-          },
-          emailRepresentative: {
-            create: data.representative.emailRepresentative,
-          },
-          phoneRepresentative: {
-            create: data.representative.phoneRepresentative,
-          },
+        ruc: {
+          create: {
+            text: parseInt(data.ruc.text), 
+            state: data.ruc.state
+          }
         },
-      },
-      stateRegistration: data.stateRegister,
-    },
-  });
-  return Organization;
+        phone: {
+          create: {
+            text: data.phone.text,
+            state: data.phone.state
+          }
+        },
+        email: {
+          create: {
+            text: data.email.text,
+            state: data.email.state
+          }
+        },
+        purpose: {
+          create: {
+            text: data.purpose.text,
+            state: data.purpose.state
+          }
+        },
+        dependentsBenefit: {
+          create: {
+            text: parseInt(data.dependentsBenefit.text), 
+            state: data.dependentsBenefit.state
+          }
+        },
+        motive: {
+          create: {
+            text: data.motive.text,
+            state: data.motive.state
+          }
+        },
+        numPreRegister: {
+          create: {
+            text: parseInt(data.numPreRegister.text),
+            state: data.numPreRegister.state
+          }
+        },
+        address: {
+          create: {
+            street: {
+              create: {
+                text: data.address.street.text,
+                state: data.address.street.state
+              }
+            },
+            city: {
+              create: {
+                text: data.address.city.text,
+                state: data.address.city.state
+              }
+            },
+            neighborhood: {
+              create: {
+                text: data.address.neighborhood.text,
+                state: data.address.neighborhood.state
+              }
+            },
+            province: {
+              create: {
+                text: data.address.province.text,
+                state: data.address.province.state
+              }
+            },
+            country: {
+              create: {
+                text: data.address.country.text,
+                state: data.address.country.state
+              }
+            }
+          }
+        },
+        coordinates: {
+          create: {
+            latitude: data.coordinates.latitude,
+            longitude: data.coordinates.longitude
+          }
+        },
+        representative: {
+          create: {
+            name: {
+              create: {
+                text: data.representative.name.text,
+                state: data.representative.name.state
+              }
+            },
+            numDoc: {
+              create: {
+                text: data.representative.numDoc.text,
+                state: data.representative.numDoc.state
+              }
+            },
+            role: {
+              create: {
+                text: data.representative.role.text,
+                state: data.representative.role.state
+              }
+            },
+            emailRepresentative: {
+              create: {
+                text: data.representative.emailRepresentative.text,
+                state: data.representative.emailRepresentative.state
+              }
+            },
+            phoneRepresentative: {
+              create: {
+                text: data.representative.phoneRepresentative.text,
+                state: data.representative.phoneRepresentative.state
+              }
+            }
+          }
+        },
+        stateRegistration: data.stateRegistration
+      }
+    });
+    return newOrganization;
+  } catch (error: any) {
+    console.error("Error al crear la organización", error);
+    throw new Error("No se pudo crear la organización");
+  }
 };
 
 export const putDataOrganization = async (id: number, data: any) => {
-  return await prisma.organization.update({ 
-    where: { id },
-    data: {
-      ...data,
-    }
-  });
+  try {
+    const updatedOrganization = await prisma.organization.update({
+      where: {
+        id: id // Aquí puedes usar la variable id para actualizar la organización específica
+      },
+      data: {
+        nameOrganization: {
+          update: {
+            text: data.nameOrganization.text,
+            state: data.nameOrganization.state
+          }
+        },
+        ruc: {
+          update: {
+            text: parseInt(data.ruc.text), 
+            state: data.ruc.state
+          }
+        },
+        phone: {
+          update: {
+            text: data.phone.text,
+            state: data.phone.state
+          }
+        },
+        email: {
+          update: {
+            text: data.email.text,
+            state: data.email.state
+          }
+        },
+        purpose: {
+          update: {
+            text: data.purpose.text,
+            state: data.purpose.state
+          }
+        },
+        dependentsBenefit: {
+          update: {
+            text: parseInt(data.dependentsBenefit.text), 
+            state: data.dependentsBenefit.state
+          }
+        },
+        motive: {
+          update: {
+            text: data.motive.text,
+            state: data.motive.state
+          }
+        },
+        numPreRegister: {
+          update: {
+            text: parseInt(data.numPreRegister.text),
+            state: data.numPreRegister.state
+          }
+        },
+        address: {
+          update: {
+            street: {
+              update: {
+                text: data.address.street.text,
+                state: data.address.street.state
+              }
+            },
+            city: {
+              update: {
+                text: data.address.city.text,
+                state: data.address.city.state
+              }
+            },
+            neighborhood: {
+              update: {
+                text: data.address.neighborhood.text,
+                state: data.address.neighborhood.state
+              }
+            },
+            province: {
+              update: {
+                text: data.address.province.text,
+                state: data.address.province.state
+              }
+            },
+            country: {
+              update: {
+                text: data.address.country.text,
+                state: data.address.country.state
+              }
+            }
+          }
+        },
+        coordinates: {
+          update: {
+            latitude: data.coordinates.latitude,
+            longitude: data.coordinates.longitude
+          }
+        },
+        representative: {
+          update: {
+            name: {
+              update: {
+                text: data.representative.name.text,
+                state: data.representative.name.state
+              }
+            },
+            numDoc: {
+              update: {
+                text: data.representative.numDoc.text,
+                state: data.representative.numDoc.state
+              }
+            },
+            role: {
+              update: {
+                text: data.representative.role.text,
+                state: data.representative.role.state
+              }
+            },
+            emailRepresentative: {
+              update: {
+                text: data.representative.emailRepresentative.text,
+                state: data.representative.emailRepresentative.state
+              }
+            },
+            phoneRepresentative: {
+              update: {
+                text: data.representative.phoneRepresentative.text,
+                state: data.representative.phoneRepresentative.state
+              }
+            }
+          }
+        },
+        stateRegistration: data.stateRegistration
+      }
+    });
+    return updatedOrganization;
+  } catch (error: any) {
+    console.error("Error al actualizar la organización", error);
+    throw new Error("No se pudo actualizar la organización");
+  }
 };
 
+
 export const patchDataOrganization = async (id: number, data: any) => {
-  const updatedData = createPrismaUpdateObject(data);
+  try {
+    const updatedData = createPrismaUpdateObject(data);
 
-  if (!updatedData) {
-    throw new Error("No valid data provided for update");
+    if (!updatedData) {
+      throw new Error("No valid data provided for update");
+    }
+
+    const updatedOrganization = await prisma.organization.update({
+      where: { id },
+      data: updatedData,
+    });
+    return updatedOrganization;
+  } catch (error: any) {
+    console.error("Error al actualizar parcialmente la organización", error);
+    throw new Error("No se pudo actualizar parcialmente la organización");
   }
-
-  return await prisma.organization.update({
-    where: { id },
-    data: updatedData,
-  });
 };
 
 function createPrismaUpdateObject(data: any) {
@@ -139,7 +351,7 @@ function createPrismaUpdateObject(data: any) {
         updateData[key] = { update: data[key] };
       }
     } else if (data[key] !== undefined && data[key] !== null) {
-      updateData[key] = { update: data[key] };
+      updateData[key] = data[key]; // Ajustado para prisma.update
     }
   }
 
@@ -147,9 +359,18 @@ function createPrismaUpdateObject(data: any) {
 }
 
 export const deleteOrganizationData = async (id: number) => {
-  //aplicar eliminacion en cascada para las claves relacionadas
-  await prisma.address.deleteMany({ where: { organizationId: id } });
-  await prisma.coordinates.deleteMany({ where: { organizationId: id } });
-  await prisma.representative.deleteMany({ where: { organizationId: id } });
-  return await prisma.organization.delete({ where: { id } });
+  try {
+    // Eliminar en cascada
+    await prisma.address.deleteMany({ where: { organizationId: id } });
+    await prisma.coordinates.deleteMany({ where: { organizationId: id } });
+    await prisma.representative.deleteMany({ where: { organizationId: id } });
+
+    const deletedOrganization = await prisma.organization.delete({
+      where: { id },
+    });
+    return deletedOrganization;
+  } catch (error: any) {
+    console.error("Error al eliminar la organización", error);
+    throw new Error("No se pudo eliminar la organización");
+  }
 };

@@ -1,45 +1,39 @@
+import { ZodError } from "zod";
 import { NextFunction, Request, Response } from "express";
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  //Determina el estado por defecto del servidor
-  const statusServer = err.status || 500;
+  if (err instanceof ZodError) {
+    // Error de validación de Zod
+    return res.status(400).json({
+      status: 400,
+      message: "Error de validación",
+      response: "Datos no válidos",
+      errors: err.errors,
+    });
+  }
 
-  // Manejo de erorres en servidor
+  const statusServer = res.statusCode || 500;
   let message: string;
   let response: any;
 
   switch (statusServer) {
     case 400:
-      message = err.message || "Bad Request: Solicitud Incorrecta";
-      response = err.response || `Invalid data ${JSON.stringify(req.body)}`;
-      break; 
-
-    case 401:
-      message = err.message || "No autorizado";
-      response = err.response || `Authorization error`;
+      message = err.message || "Solicitud Incorrecta";
+      response = err.response || `Datos no válidos: ${JSON.stringify(req.body)}`;
       break;
-
-    case 403:
-      message = err.message || "Prohibido";
-      response = err.response || `Access denied`;
-      break;
-
     case 404:
       message = err.message || "Recurso no encontrado";
-      response = err.response || `Resource not found: ${req.originalUrl}`;
+      response = `URL inválida. Verifica el endpoint y los parámetros.`;
       break;
-
     default:
       message = err.message || "Error interno del servidor";
-      response = err.response || `Unexpected error`;
+      response = `Error inesperado`;
       break;
   }
 
-  // Repuesta del servidor
   res.status(statusServer).json({
     status: statusServer,
     message: message,
     response: response,
   });
-  next();
 };
