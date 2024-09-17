@@ -12,7 +12,7 @@ const OrganizationSchema = z.object({
     state: z.boolean(),
   }),
   ruc: z.object({
-    text: z.string().length(10, "El RUC debe tener exactamente 11 caracteres"),
+    text: z.string().length(10, "Ruc invalido"),
     state: z.boolean(),
   }),
   phone: z.object({
