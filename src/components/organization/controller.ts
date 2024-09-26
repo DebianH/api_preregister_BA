@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import * as service from "../../services/services";
 import { z } from "zod";
+import { Certificate } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +13,7 @@ const OrganizationSchema = z.object({
     state: z.boolean(),
   }),
   ruc: z.object({
-    text: z.string().length(10, "Ruc invalido"),
+    text: z.string(), //TODO: verle esto
     state: z.boolean(),
   }),
   phone: z.object({
@@ -28,7 +29,7 @@ const OrganizationSchema = z.object({
     state: z.boolean(),
   }),
   dependentsBenefit: z.object({
-    text: z.string().optional(),
+    text: z.number().optional(),
     state: z.boolean(),
   }),
   motive: z.object({
@@ -38,6 +39,16 @@ const OrganizationSchema = z.object({
   numPreRegister: z.object({
     text: z.string().optional(),
     state: z.boolean(),
+  }),
+  certificates: z.object({
+    iessCertificate: z.object({
+      imageurl: z.string(),
+      state: z.boolean(),
+    }).optional(),
+    sriCertificate: z.object({
+      imageurl: z.string(),
+      state: z.boolean(),
+    }).optional(),
   }),
   address: z.object({
     street: z.object({
@@ -262,7 +273,7 @@ export const deleteOrganization = async (
     const onDeleteOrganization = await service.deleteOrganizationData(Number(id));
     return res.status(200).json({
       status: 200,
-      message: "La organización ha sido eliminada correctamente",
+      message: `La organización con el id ${id} sido eliminada correctamente`,
       response: onDeleteOrganization,
     });
   } catch (error) {
@@ -280,3 +291,5 @@ export const deleteOrganization = async (
     });
   }
 };
+
+

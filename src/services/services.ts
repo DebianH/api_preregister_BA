@@ -51,7 +51,7 @@ export const createOrganization = async (data: any) => {
         },
         ruc: {
           create: {
-            text: parseInt(data.ruc.text), 
+            text: parseInt(data.ruc.text),
             state: data.ruc.state
           }
         },
@@ -75,7 +75,7 @@ export const createOrganization = async (data: any) => {
         },
         dependentsBenefit: {
           create: {
-            text: parseInt(data.dependentsBenefit.text), 
+            text: parseInt(data.dependentsBenefit.text),
             state: data.dependentsBenefit.state
           }
         },
@@ -190,7 +190,7 @@ export const putDataOrganization = async (id: number, data: any) => {
         },
         ruc: {
           update: {
-            text: parseInt(data.ruc.text), 
+            text: parseInt(data.ruc.text),
             state: data.ruc.state
           }
         },
@@ -214,7 +214,7 @@ export const putDataOrganization = async (id: number, data: any) => {
         },
         dependentsBenefit: {
           update: {
-            text: parseInt(data.dependentsBenefit.text), 
+            text: parseInt(data.dependentsBenefit.text),
             state: data.dependentsBenefit.state
           }
         },
@@ -360,15 +360,25 @@ function createPrismaUpdateObject(data: any) {
 
 export const deleteOrganizationData = async (id: number) => {
   try {
-    // Eliminar en cascada
-    await prisma.address.deleteMany({ where: { organizationId: id } });
-    await prisma.coordinates.deleteMany({ where: { organizationId: id } });
-    await prisma.representative.deleteMany({ where: { organizationId: id } });
-
-    const deletedOrganization = await prisma.organization.delete({
-      where: { id },
-    });
-    return deletedOrganization;
+    await prisma.$transaction(async (prisma) => {
+      // Eliminar en cascada
+      await prisma.address.deleteMany({ where: { organizationId: id } });
+      await prisma.coordinates.deleteMany({ where: { organizationId: id } });
+      await prisma.representative.deleteMany({ where: { organizationId: id } });
+      //COMO BORRO Staterepresentative!!!!
+      await prisma.nameOrganization.deleteMany({ where: { organization: { id } } });
+      await prisma.ruc.deleteMany({ where: { organization: { id } } });
+      await prisma.phone.deleteMany({ where: { organization: { id } } });
+      await prisma.email.deleteMany({ where: { organization: { id } } });
+      await prisma.purpose.deleteMany({ where: { organization: { id } } });
+      await prisma.dependentsBenefit.deleteMany({ where: { organization: { id } } });
+      await prisma.motive.deleteMany({ where: { organization: { id } } });
+      await prisma.numPreRegister.deleteMany({ where: { organization: { id } } });
+      await prisma.certificates.deleteMany({ where: { organizationId: id } });
+      
+      const deletedOrganization = await deleteOrganizationData(id)
+      return deletedOrganization;
+    })
   } catch (error: any) {
     console.error("Error al eliminar la organización", error);
     throw new Error("No se pudo eliminar la organización");

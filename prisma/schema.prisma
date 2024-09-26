@@ -9,143 +9,173 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Organization {
-  id                  Int               @id @default(autoincrement())
-  nameOrganizationId  Int               @unique
-  rucId               Int               @unique
-  phoneId             Int               @unique
-  emailId             Int               @unique
-  purposeId           Int               @unique
-  dependentsBenefitId Int               @unique
-  motiveId            Int               @unique
-  numPreRegisterId    Int               @unique
-  address             Address?           
-  coordinates         Coordinates?
-  representative      Representative?
-  stateRegistration   stateRegistration @default(PENDING)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  id                Int               @id @default(autoincrement())
+  address           Address?
+  coordinates       Coordinates?
+  representative    Representative?
+  stateRegistration stateRegistration @default(PENDING)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
-  nameOrganization  NameOrganization?  @relation("NameOrganization", fields: [nameOrganizationId], references: [id])
-  ruc               Ruc?               @relation("Ruc", fields: [rucId], references: [id])
-  phone             Phone?             @relation("Phone", fields: [phoneId], references: [id])
-  email             Email?             @relation("Email", fields: [emailId], references: [id])
-  purpose           Purpose?           @relation("Purpose", fields: [purposeId], references: [id])
-  dependentsBenefit DependentsBenefit? @relation("DependentsBenefit", fields: [dependentsBenefitId], references: [id])
-  motive            Motive?            @relation("Motive", fields: [motiveId], references: [id])
-  numPreRegister    NumPreRegister?    @relation("NumPreRegister", fields: [numPreRegisterId], references: [id])
+  nameOrganization  NameOrganization?
+  ruc               Ruc?
+  phone             Phone?
+  email             Email?
+  purpose           Purpose?
+  dependentsBenefit DependentsBenefit?
+  motive            Motive?
+  numPreRegister    NumPreRegister?
+  certificates      Certificates?
 }
 
 model NameOrganization {
-  id           Int           @id @default(autoincrement())
-  text         String
-  state        Boolean
-  organization Organization? @relation("NameOrganization")
+  id                 Int           @id @default(autoincrement())
+  text               String
+  state              Boolean
+  organization       Organization? @relation(fields: [nameOrganizationId], references: [id])
+  nameOrganizationId Int?          @unique
 }
 
 model Ruc {
   id           Int           @id @default(autoincrement())
   text         Int
   state        Boolean
-  organization Organization? @relation("Ruc")
+  organization Organization? @relation(fields: [rucId], references: [id])
+  rucId        Int           @unique
 }
 
 model Phone {
   id           Int           @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation("Phone")
+  organization Organization? @relation(fields: [phoneId], references: [id])
+  phoneId      Int           @unique
 }
 
 model Email {
   id           Int           @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation("Email")
+  organization Organization? @relation(fields: [emailId], references: [id])
+  emailId      Int           @unique
 }
 
 model Purpose {
   id           Int           @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation("Purpose")
+  organization Organization? @relation(fields: [purposeId], references: [id])
+  purposeId    Int           @unique
 }
 
 model DependentsBenefit {
-  id           Int           @id @default(autoincrement())
-  text         Int
-  state        Boolean
-  organization Organization? @relation("DependentsBenefit")
+  id                  Int           @id @default(autoincrement())
+  text                Int
+  state               Boolean
+  organization        Organization? @relation(fields: [dependentsBenefitId], references: [id])
+  dependentsBenefitId Int           @unique
 }
 
 model Motive {
   id           Int           @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation("Motive")
+  organization Organization? @relation(fields: [motiveId], references: [id])
+  motiveId     Int           @unique
 }
 
 model NumPreRegister {
+  id               Int           @id @default(autoincrement())
+  text             Int
+  state            Boolean
+  organization     Organization? @relation(fields: [numPreRegisterId], references: [id])
+  numPreRegisterId Int           @unique
+}
+
+model Certificates {
+  id             Int          @id @default(autoincrement())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int          @unique
+
+  iessCertificate     IESSCertification? @relation("IESScertification", fields: [iessCertificationId], references: [id])
+  iessCertificationId Int?               @unique
+
+  sriCertification   SRICertification? @relation("SRICertification", fields: [sriCertificationId], references: [id])
+  sriCertificationId Int?              @unique
+}
+
+model IESSCertification {
   id           Int           @id @default(autoincrement())
-  text         Int
+  imageurl     String
   state        Boolean
-  organization Organization? @relation("NumPreRegister")
+  certificates Certificates? @relation("IESScertification")
+  updatedat    DateTime      @updatedAt
+}
+
+model SRICertification {
+  id           Int           @id @default(autoincrement())
+  imageurl     String
+  state        Boolean
+  certificates Certificates? @relation("SRICertification")
+  updatedat    DateTime      @updatedAt
 }
 
 model Address {
-  id             Int           @id @default(autoincrement())
-  streetId       Int           @unique
-  cityId         Int           @unique
-  neighborhoodId Int           @unique
-  provinceId     Int           @unique
-  countryId      Int           @unique
+  id             Int          @id @default(autoincrement())
   organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int           @unique
+  organizationId Int          @unique
 
-  street       Street?       @relation("Street", fields: [streetId], references: [id])
-  city         City?         @relation("City", fields: [cityId], references: [id])
-  neighborhood Neighborhood? @relation("Neighborhood", fields: [neighborhoodId], references: [id])
-  province     Province?     @relation("Province", fields: [provinceId], references: [id])
-  country      Country?      @relation("Country", fields: [countryId], references: [id])
+  street       Street?
+  city         City?
+  neighborhood Neighborhood?
+  province     Province?
+  country      Country?
 }
 
 model Street {
-  id      Int      @id @default(autoincrement())
-  text    String
-  state   Boolean
-  address Address? @relation("Street")
+  id       Int      @id @default(autoincrement())
+  text     String
+  state    Boolean
+  address  Address? @relation(fields: [streetId], references: [id])
+  streetId Int      @unique
 }
 
 model City {
   id      Int      @id @default(autoincrement())
   text    String
   state   Boolean
-  address Address? @relation("City")
+  address Address? @relation(fields: [cityId], references: [id])
+  cityId  Int      @unique
 }
 
 model Neighborhood {
-  id      Int      @id @default(autoincrement())
-  text    String
-  state   Boolean
-  address Address? @relation("Neighborhood")
+  id             Int      @id @default(autoincrement())
+  text           String
+  state          Boolean
+  address        Address? @relation(fields: [neighborhoodId], references: [id])
+  neighborhoodId Int      @unique
 }
 
 model Province {
-  id      Int      @id @default(autoincrement())
-  text    String
-  state   Boolean
-  address Address? @relation("Province")
+  id         Int      @id @default(autoincrement())
+  text       String
+  state      Boolean
+  address    Address? @relation(fields: [provinceId], references: [id])
+  provinceId Int      @unique
 }
 
 model Country {
-  id      Int      @id @default(autoincrement())
-  text    String
-  state   Boolean
-  address Address? @relation("Country")
+  id        Int      @id @default(autoincrement())
+  text      String
+  state     Boolean
+  address   Address? @relation(fields: [countryId], references: [id])
+  countryId Int      @unique
 }
 
 model Coordinates {
@@ -158,54 +188,54 @@ model Coordinates {
 
 model Representative {
   id             Int           @id @default(autoincrement())
-  nameId         Int           @unique
-  numDocId       Int           @unique
-  roleId         Int           @unique
-  emailId        Int           @unique
-  phoneId        Int           @unique
   organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId Int           @unique
 
-  name                Name?                @relation("Name", fields: [nameId], references: [id])
-  numDoc              NumDoc?              @relation("NumDoc", fields: [numDocId], references: [id])
-  role                Role?                @relation("Role", fields: [roleId], references: [id])
-  emailRepresentative EmailRepresentative? @relation("EmailRepresentative", fields: [emailId], references: [id])
-  phoneRepresentative PhoneRepresentative? @relation("PhoneRepresentative", fields: [phoneId], references: [id])
+  name                Name?
+  numDoc              NumDoc?
+  role                Role?
+  emailRepresentative EmailRepresentative?
+  phoneRepresentative PhoneRepresentative?
 }
 
 model Name {
   id             Int             @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation("Name")
+  representative Representative? @relation(fields: [nameId], references: [id])
+  nameId         Int             @unique
 }
 
 model NumDoc {
   id             Int             @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation("NumDoc")
+  representative Representative? @relation(fields: [numDocId], references: [id])
+  numDocId       Int             @unique
 }
 
 model Role {
   id             Int             @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation("Role")
+  representative Representative? @relation(fields: [roleId], references: [id])
+  roleId         Int             @unique
 }
 
 model EmailRepresentative {
   id             Int             @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation("EmailRepresentative")
+  representative Representative? @relation(fields: [emailId], references: [id])
+  emailId        Int             @unique
 }
 
 model PhoneRepresentative {
   id             Int             @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation("PhoneRepresentative")
+  representative Representative? @relation(fields: [phoneId], references: [id])
+  phoneId        Int             @unique
 }
 
 enum stateRegistration {
