@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,227 +9,235 @@ datasource db {
 }
 
 model Organization {
-  id                Int               @id @default(autoincrement())
+  id                Int                @id @default(autoincrement())
+  stateRegistration stateRegistration  @default(PENDING)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   address           Address?
-  coordinates       Coordinates?
-  representative    Representative?
-  stateRegistration stateRegistration @default(PENDING)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-
-  nameOrganization  NameOrganization?
-  ruc               Ruc?
-  phone             Phone?
-  email             Email?
-  purpose           Purpose?
-  dependentsBenefit DependentsBenefit?
-  motive            Motive?
-  numPreRegister    NumPreRegister?
   certificates      Certificates?
+  coordinates       Coordinates?
+  dependentsBenefit DependentsBenefit?
+  email             Email?
+  motive            Motive?
+  nameOrganization  NameOrganization?
+  numPreRegister    NumPreRegister?
+  phone             Phone?
+  purpose           Purpose?
+  representative    Representative?
+  ruc               Ruc?
 }
 
 model NameOrganization {
   id                 Int           @id @default(autoincrement())
   text               String
   state              Boolean
-  organization       Organization? @relation(fields: [nameOrganizationId], references: [id])
   nameOrganizationId Int?          @unique
+  organization       Organization? @relation(fields: [nameOrganizationId], references: [id], onDelete: Cascade)
 }
 
 model Ruc {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   text         Int
   state        Boolean
-  organization Organization? @relation(fields: [rucId], references: [id])
-  rucId        Int           @unique
+  rucId        Int          @unique
+  organization Organization @relation(fields: [rucId], references: [id], onDelete: Cascade)
 }
 
 model Phone {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation(fields: [phoneId], references: [id])
-  phoneId      Int           @unique
+  phoneId      Int          @unique
+  organization Organization @relation(fields: [phoneId], references: [id], onDelete: Cascade)
 }
 
 model Email {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation(fields: [emailId], references: [id])
-  emailId      Int           @unique
+  emailId      Int          @unique
+  organization Organization @relation(fields: [emailId], references: [id], onDelete: Cascade)
 }
 
 model Purpose {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation(fields: [purposeId], references: [id])
-  purposeId    Int           @unique
+  purposeId    Int          @unique
+  organization Organization @relation(fields: [purposeId], references: [id], onDelete: Cascade)
 }
 
 model DependentsBenefit {
   id                  Int           @id @default(autoincrement())
   text                Int
   state               Boolean
-  organization        Organization? @relation(fields: [dependentsBenefitId], references: [id])
   dependentsBenefitId Int           @unique
+  beneficiaries       Beneficiary[]
+  organization        Organization  @relation(fields: [dependentsBenefitId], references: [id], onDelete: Cascade)
+}
+
+model Beneficiary {
+  id                  Int                @id @default(autoincrement())
+  age                 Int
+  gender              String
+  phoneNumber         String
+  dependentsBenefitId Int?
+  addressId           Int?
+  address             Address?           @relation(fields: [addressId], references: [id])
+  dependentsBenefit   DependentsBenefit? @relation(fields: [dependentsBenefitId], references: [id])
 }
 
 model Motive {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   text         String
   state        Boolean
-  organization Organization? @relation(fields: [motiveId], references: [id])
-  motiveId     Int           @unique
+  motiveId     Int          @unique
+  organization Organization @relation(fields: [motiveId], references: [id], onDelete: Cascade)
 }
 
 model NumPreRegister {
-  id               Int           @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   text             Int
   state            Boolean
-  organization     Organization? @relation(fields: [numPreRegisterId], references: [id])
-  numPreRegisterId Int           @unique
+  numPreRegisterId Int          @unique
+  organization     Organization @relation(fields: [numPreRegisterId], references: [id], onDelete: Cascade)
 }
 
 model Certificates {
-  id             Int          @id @default(autoincrement())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int          @unique
-
-  iessCertificate     IESSCertification? @relation("IESScertification", fields: [iessCertificationId], references: [id])
+  id                  Int                @id @default(autoincrement())
+  organizationId      Int                @unique
   iessCertificationId Int?               @unique
-
-  sriCertification   SRICertification? @relation("SRICertification", fields: [sriCertificationId], references: [id])
-  sriCertificationId Int?              @unique
+  sriCertificateId    Int?               @unique
+  iessCertificate     IESSCertification? @relation("IESScertification", fields: [iessCertificationId], references: [id], onDelete: Cascade)
+  organization        Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sriCertificate      SRICertification?  @relation("SRICertification", fields: [sriCertificateId], references: [id], onDelete: Cascade)
 }
 
 model IESSCertification {
   id           Int           @id @default(autoincrement())
   imageurl     String
   state        Boolean
-  certificates Certificates? @relation("IESScertification")
   updatedat    DateTime      @updatedAt
+  certificates Certificates? @relation("IESScertification")
 }
 
 model SRICertification {
   id           Int           @id @default(autoincrement())
   imageurl     String
   state        Boolean
-  certificates Certificates? @relation("SRICertification")
   updatedat    DateTime      @updatedAt
+  certificates Certificates? @relation("SRICertification")
 }
 
 model Address {
-  id             Int          @id @default(autoincrement())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int          @unique
-
-  street       Street?
-  city         City?
-  neighborhood Neighborhood?
-  province     Province?
-  country      Country?
+  id             Int           @id @default(autoincrement())
+  organizationId Int           @unique
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  beneficiaries  Beneficiary[]
+  city           City?
+  country        Country?
+  neighborhood   Neighborhood?
+  province       Province?
+  street         Street?
 }
 
 model Street {
-  id       Int      @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   text     String
   state    Boolean
-  address  Address? @relation(fields: [streetId], references: [id])
-  streetId Int      @unique
+  streetId Int     @unique
+  address  Address @relation(fields: [streetId], references: [id], onDelete: Cascade)
 }
 
 model City {
-  id      Int      @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   text    String
   state   Boolean
-  address Address? @relation(fields: [cityId], references: [id])
-  cityId  Int      @unique
+  cityId  Int     @unique
+  address Address @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
 
 model Neighborhood {
-  id             Int      @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   text           String
   state          Boolean
-  address        Address? @relation(fields: [neighborhoodId], references: [id])
-  neighborhoodId Int      @unique
+  neighborhoodId Int     @unique
+  address        Address @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
 }
 
 model Province {
-  id         Int      @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   text       String
   state      Boolean
-  address    Address? @relation(fields: [provinceId], references: [id])
-  provinceId Int      @unique
+  provinceId Int     @unique
+  address    Address @relation(fields: [provinceId], references: [id], onDelete: Cascade)
 }
 
 model Country {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   text      String
   state     Boolean
-  address   Address? @relation(fields: [countryId], references: [id])
-  countryId Int      @unique
+  countryId Int     @unique
+  address   Address @relation(fields: [countryId], references: [id], onDelete: Cascade)
 }
 
 model Coordinates {
-  id             Int           @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   latitude       String
   longitude      String
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int           @unique
+  organizationId Int          @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Representative {
-  id             Int           @id @default(autoincrement())
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int           @unique
-
+  id                  Int                  @id @default(autoincrement())
+  organizationId      Int                  @unique
+  emailRepresentative EmailRepresentative?
   name                Name?
   numDoc              NumDoc?
-  role                Role?
-  emailRepresentative EmailRepresentative?
   phoneRepresentative PhoneRepresentative?
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role                Role?
 }
 
 model Name {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation(fields: [nameId], references: [id])
-  nameId         Int             @unique
+  nameId         Int            @unique
+  representative Representative @relation(fields: [nameId], references: [id], onDelete: Cascade)
 }
 
 model NumDoc {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation(fields: [numDocId], references: [id])
-  numDocId       Int             @unique
+  numDocId       Int            @unique
+  representative Representative @relation(fields: [numDocId], references: [id], onDelete: Cascade)
 }
 
 model Role {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation(fields: [roleId], references: [id])
-  roleId         Int             @unique
+  roleId         Int            @unique
+  representative Representative @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
 model EmailRepresentative {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation(fields: [emailId], references: [id])
-  emailId        Int             @unique
+  emailId        Int            @unique
+  representative Representative @relation(fields: [emailId], references: [id], onDelete: Cascade)
 }
 
 model PhoneRepresentative {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   text           String
   state          Boolean
-  representative Representative? @relation(fields: [phoneId], references: [id])
-  phoneId        Int             @unique
+  phoneId        Int            @unique
+  representative Representative @relation(fields: [phoneId], references: [id], onDelete: Cascade)
 }
 
 enum stateRegistration {

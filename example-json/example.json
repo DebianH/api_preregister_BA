@@ -7,7 +7,7 @@
         "state": true
     },
     "ruc": {
-        "text": 1721259313,
+        "text": "1721259313",
         "state": true
     },
     "phone": {
@@ -24,7 +24,33 @@
     },
     "dependentsBenefit": {
         "text": 38,
-        "state": true
+        "state": true,
+        "beneficiaries": [
+            {
+                "age": 25,
+                "gender": "Male",
+                "phoneNumber": "0987654321",
+                "address": {
+                    "street": "Avenida 6 Diciembre",
+                    "city": "Uio",
+                    "neighborhood": "El Inca",
+                    "province": "Pichincha",
+                    "country": "Ecuador"
+                }
+            },
+            {
+                "age": 30,
+                "gender": "Female",
+                "phoneNumber": "0987654322",
+                "address": {
+                    "street": "Avenida 10 de Agosto",
+                    "city": "Quito",
+                    "neighborhood": "La Mariscal",
+                    "province": "Pichincha",
+                    "country": "Ecuador"
+                }
+            }
+        ]
     },
     "motive": {
         "text": "Expansión",
@@ -39,7 +65,7 @@
             "imageurl": "http://example.com/nice.jpg",
             "state": true
         },
-        "iessCertificationId": {
+        "sriCertificate": {
             "imageurl": "http://example.com/catalog.jpg",
             "state": true
         }

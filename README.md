@@ -4,7 +4,7 @@
 - Necesito que el endpoint devuelva un json similar a este ejemplo
   const dataOnlyOrganizations = {
     "nameOrganization": { "text": "Fundación Esperanza", "state": true },
-    "ruc": { "text": 1721259313, "state": true },
+    "ruc": { "text": "1721259313", "state": true },
     "phone": { "text": "098002575", "state": true },
     "email": { "text": "fune-espe@organizacion.com", "state": true },
     "purpose": { "text": "Negocio", "state": true },

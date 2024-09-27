@@ -1,4 +1,6 @@
 import prisma from "../utils/prismaClient";
+import { deletedAndResignIds } from "./updateOrderDatabase";
+import { z } from "zod";
 
 export const fetchAllOrganizations = async () => {
   try {
@@ -76,7 +78,10 @@ export const createOrganization = async (data: any) => {
         dependentsBenefit: {
           create: {
             text: parseInt(data.dependentsBenefit.text),
-            state: data.dependentsBenefit.state
+            state: data.dependentsBenefit.state,
+            beneficiaries: {
+              create: data.dependentsBenefit.beneficiaries
+            }
           }
         },
         motive: {
@@ -168,10 +173,13 @@ export const createOrganization = async (data: any) => {
         stateRegistration: data.stateRegistration
       }
     });
+    console.log("Nueva organización creada", newOrganization);
     return newOrganization;
   } catch (error: any) {
-    console.error("Error al crear la organización", error);
-    throw new Error("No se pudo crear la organización");
+    if(error instanceof z.ZodError){
+      throw new Error("Error de validación de datos");
+    }
+    //return error;
   }
 };
 
@@ -361,22 +369,8 @@ function createPrismaUpdateObject(data: any) {
 export const deleteOrganizationData = async (id: number) => {
   try {
     await prisma.$transaction(async (prisma) => {
-      // Eliminar en cascada
-      await prisma.address.deleteMany({ where: { organizationId: id } });
-      await prisma.coordinates.deleteMany({ where: { organizationId: id } });
-      await prisma.representative.deleteMany({ where: { organizationId: id } });
-      //COMO BORRO Staterepresentative!!!!
-      await prisma.nameOrganization.deleteMany({ where: { organization: { id } } });
-      await prisma.ruc.deleteMany({ where: { organization: { id } } });
-      await prisma.phone.deleteMany({ where: { organization: { id } } });
-      await prisma.email.deleteMany({ where: { organization: { id } } });
-      await prisma.purpose.deleteMany({ where: { organization: { id } } });
-      await prisma.dependentsBenefit.deleteMany({ where: { organization: { id } } });
-      await prisma.motive.deleteMany({ where: { organization: { id } } });
-      await prisma.numPreRegister.deleteMany({ where: { organization: { id } } });
-      await prisma.certificates.deleteMany({ where: { organizationId: id } });
       
-      const deletedOrganization = await deleteOrganizationData(id)
+      const deletedOrganization = await deletedAndResignIds(id)
       return deletedOrganization;
     })
   } catch (error: any) {

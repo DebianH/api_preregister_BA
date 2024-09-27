@@ -30,7 +30,7 @@ export const fetchInfoOrganization = async () => {
                   state: true
                 }
               },
-              sriCertification: {
+              sriCertificate: {
                 select: {
                   state: true
                 }
@@ -42,17 +42,6 @@ export const fetchInfoOrganization = async () => {
     } catch (error: any) {
       console.error("Error al obtener los datos de la Organizacion beneficiaria", error);
       throw new Error("No se pudo obtener los datos de la Organizacion beneficiaria");
-    }
-  }
-  
-  export function fetchPersonalOrganization() {
-    try {
-      return prisma.organization.findMany({
-        // TODO: crear el esquema prisma para obtener los datos del personal de la organizacion
-      })
-    } catch (error: any) {
-      console.error("Error al obtener los datos del personal de la Organizacion", error);
-      throw new Error("No se pudo obtener los datos del personal de la Organizacion");
     }
   }
   
@@ -88,7 +77,7 @@ export function fetchInfoOrganizationById(id: number) {
                 state: true
               }
             },
-            sriCertification: {
+            sriCertificate: {
               select: {
                 state: true
               }
@@ -102,4 +91,5 @@ export function fetchInfoOrganizationById(id: number) {
     throw new Error("No se pudo obtener los datos del personal de la Organizacion");
   }
 }
-  
+
+

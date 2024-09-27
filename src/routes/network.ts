@@ -1,28 +1,24 @@
 import express, { Router } from "express";
 import { PrismaClient } from '@prisma/client'
-import { success } from "../network/response";
-import * as Organization from "../components/organization/controller";
-import * as otherRouter from "../components/organization/otherRoutes";
+import * as Organization from "../controller/organization/controller";
+import * as OtherRouter from "../controller/organization/otherRoutes";
+import * as beneficiariesController from '../controller/organization/beneficiaries';
+
 
 const prisma = new PrismaClient();
 const router = express.Router();
 
 // TODO: Correccion de errores, mandar las verificaciones con ID, al final de la sentencia y las implementaciones antes, porque zod verifica antes esas 
+
 router.get('/all', Organization.getAllOrganizations)
 
-router.get('/organizationres', otherRouter.getOrgnizationInfo)
-router.get('/orgworkerpersonal', otherRouter.getOrgnizationPersonal)
+//From Tickets
+router.get('/organizationinfo', OtherRouter.getOrganizationInfo)
+router.get('/organizationinfo/:id', OtherRouter.getOrgnizationInfoById)
 
-router.get('/orgbeneficiariainfo/:id', otherRouter.getOrgnizationInfoById)
-router.get('/orgworkerpersonal/:id', otherRouter.getOrgnizationPersonalById)
 
+// From MS
 router.get('/:id', Organization.getOrganizationById)
-
-
-//router.get('/orgbeneficiariainfo/:id', Organization.getOrgnizationInfoById)
-
-
-//router.get('/orgworkerpersonal/:id', Organization.getOrgnizationInfoById)
 
 router.post('/create', Organization.createOrganization)
 

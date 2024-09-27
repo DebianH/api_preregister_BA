@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import organization from "./routes/network";
+import beneficiaries from "./routes/beneficiary.routes";
 import cors from 'cors';
 import { errorHandler } from './utils/errorHandler';
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/organization', organization);
+app.use('/api/beneficiaries', beneficiaries);
 
 // Middleware para manejar rutas no encontradas
 app.use((req, res, next) => {
