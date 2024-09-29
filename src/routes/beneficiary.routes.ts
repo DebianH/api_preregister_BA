@@ -4,9 +4,11 @@ import * as beneficiariesController from '../controller/organization/beneficiari
 
 const router: Application = express();
 
+
+
 router.get('/orgbeneficiarypersonal', beneficiariesController.getbeneficiariesFromOrganization)
 router.get('/orgbeneficiarypersonal/:id', beneficiariesController.getOrgnizationPersonalById)
-router.put('/orgbeneficiarypersonal/:id', beneficiariesController.updateBeneficiariesOrganization)
+router.post('/orgbeneficiarypersonal/:id', beneficiariesController.createBeneficiariesOrganization)
 
 
 export default router;

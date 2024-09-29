@@ -1,5 +1,8 @@
 import { DependentsBenefit, PrismaClient } from '@prisma/client';
 import { equal } from 'assert';
+import { count } from 'console';
+import { create } from 'domain';
+import { Request, Response, NextFunction } from 'express';
 
 const prisma = new PrismaClient();
 
@@ -40,23 +43,47 @@ export const fetchBeneficiariesOrganizationById = async (id: number) => {
     return beneficiariesInfo;
 }
 
-export const patchBeneficiariesOrganization = async (id: number, data: Partial<DependentsBenefit & { beneficiaries: any }>) => {
+export const postBeneficiariesOrganization = async (id: number, data: any) => {
     try {
-        const oncreateBeneficiary = prisma.dependentsBenefit.create({
+        const newDependentsBenefit = await prisma.dependentsBenefit.create({
             data: {
-                text: data.text ?? 0,
-                state: data.state ?? false,
+                text: data.text,
+                state: data.state,
                 beneficiaries: {
-                    create: data.beneficiaries
+                    create: data.beneficiaries.map((beneficiary: { 
+                        age: number; 
+                        gender: string; 
+                        phoneNumber: string; 
+                        address: { 
+                            city: string; 
+                            country: string; 
+                            neighborhood: string; 
+                            province: string; 
+                            street: string; 
+                        };
+                    }) => ({
+                        age: beneficiary.age,
+                        gender: beneficiary.gender,
+                        phoneNumber: beneficiary.phoneNumber,
+                        address: {
+                            create: {
+                                city: beneficiary.address.city,
+                                country: beneficiary.address.country,
+                                neighborhood: beneficiary.address.neighborhood,
+                                province: beneficiary.address.province,
+                                street: beneficiary.address.street,
+                            }
+                        }
+                    })),
                 },
                 organization: {
-                    connect: { id: id }
-                }
-            }
-        })
-        return oncreateBeneficiary;
+                    connect: { id: id }, // Conectar la organización existente
+                },
+            },
+        });
+
+        return newDependentsBenefit;
     } catch (error) {
-        console.error('Error updating beneficiaries', error);
-        throw error;
+        console.log("Error al actualizar los beneficiarios", error)
     }
 }

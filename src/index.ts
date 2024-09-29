@@ -16,12 +16,13 @@ app.use(express.json());
 app.use('/api/organization', organization);
 app.use('/api/beneficiaries', beneficiaries);
 
-// Middleware para manejar rutas no encontradas
-app.use((req, res, next) => {
-    const error = new Error('URL inválida. Verifica el endpoint y los parámetros.');
-    res.status(404);
-    next(error);
-  });
+// Middleware para validar JSON
+app.use((err:any, req:any, res:any, next:any) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).send({ message: 'Invalid JSON' });
+  }
+  next();
+});
 
 app.use(errorHandler);
 

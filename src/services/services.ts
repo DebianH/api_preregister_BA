@@ -66,7 +66,7 @@ export const createOrganization = async (data: any) => {
         email: {
           create: {
             text: data.email.text,
-            state: data.email.state
+            state: data.email.state,
           }
         },
         purpose: {
@@ -179,7 +179,6 @@ export const createOrganization = async (data: any) => {
     if(error instanceof z.ZodError){
       throw new Error("Error de validación de datos");
     }
-    //return error;
   }
 };
 
@@ -222,7 +221,7 @@ export const putDataOrganization = async (id: number, data: any) => {
         },
         dependentsBenefit: {
           update: {
-            text: parseInt(data.dependentsBenefit.text),
+            text: data.dependentsBenefit.text,
             state: data.dependentsBenefit.state
           }
         },
@@ -351,7 +350,7 @@ function createPrismaUpdateObject(data: any) {
       typeof data[key] === "object" &&
       !Array.isArray(data[key])
     ) {
-      if (key === "address" || key === "representative") {
+      if (key === "address" || key === "representative" || key === "dependentsBenefit") {
         updateData[key] = {
           update: createPrismaUpdateObject(data[key]), // Llamada recursiva para objetos anidados
         };

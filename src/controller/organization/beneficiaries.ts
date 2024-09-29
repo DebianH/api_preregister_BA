@@ -7,7 +7,7 @@ const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] });
 export const getbeneficiariesFromOrganization = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const organizationPersonal = await benificaryService.fetchBeneficiariesOrganization()
-
+        
         res.status(200).json({
             status: 200,
             message: "Informacion de las personas beneficiarias las Organizaciones obtenidas exitosamente",
@@ -44,17 +44,24 @@ export const getOrgnizationPersonalById = async (req: Request, res: Response, ne
 }
 
 //TODO: Arreglar el metodo update, para que se pueda actualizar la lista beneficiarios, revisar claves foraneas
-export const updateBeneficiariesOrganization = async (req: Request, res: Response, next: NextFunction) => {
-    const organizationId = parseInt(req.params.id);
-    const { beneficiaries, ...dependentsBenefitData } = req.body;
-
+export const createBeneficiariesOrganization = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const updatedBeneficiaries = await benificaryService.patchBeneficiariesOrganization(organizationId, req.body);
+        const { id } = req.params;
 
+        const beneficiariesData = await benificaryService.postBeneficiariesOrganization(Number(id), req.body);
+
+        if(beneficiariesData === null) {
+            res.status(400).json({
+                status: 400,
+                message: "Error al actualizar los beneficiarios",
+                response: beneficiariesData
+            });
+        }
+        
         res.status(200).json({
             status: 200,
             message: "Beneficiarios actualizados correctamente",
-            response: updatedBeneficiaries,
+            response: beneficiariesData,
         });
     } catch (error) {
         console.error("Error al actualizar los beneficiarios", error);
@@ -64,3 +71,4 @@ export const updateBeneficiariesOrganization = async (req: Request, res: Respons
         });
     }
 }
+

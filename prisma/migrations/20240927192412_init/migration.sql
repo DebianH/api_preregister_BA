@@ -72,6 +72,18 @@ CREATE TABLE "DependentsBenefit" (
 );
 
 -- CreateTable
+CREATE TABLE "Beneficiary" (
+    "id" SERIAL NOT NULL,
+    "age" INTEGER NOT NULL,
+    "gender" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "dependentsBenefitId" INTEGER NOT NULL,
+    "addressId" INTEGER NOT NULL,
+
+    CONSTRAINT "Beneficiary_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Motive" (
     "id" SERIAL NOT NULL,
     "text" TEXT NOT NULL,
@@ -96,7 +108,7 @@ CREATE TABLE "Certificates" (
     "id" SERIAL NOT NULL,
     "organizationId" INTEGER NOT NULL,
     "iessCertificationId" INTEGER,
-    "sriCertificationId" INTEGER,
+    "sriCertificateId" INTEGER,
 
     CONSTRAINT "Certificates_pkey" PRIMARY KEY ("id")
 );
@@ -278,7 +290,7 @@ CREATE UNIQUE INDEX "Certificates_organizationId_key" ON "Certificates"("organiz
 CREATE UNIQUE INDEX "Certificates_iessCertificationId_key" ON "Certificates"("iessCertificationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Certificates_sriCertificationId_key" ON "Certificates"("sriCertificationId");
+CREATE UNIQUE INDEX "Certificates_sriCertificateId_key" ON "Certificates"("sriCertificateId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Address_organizationId_key" ON "Address"("organizationId");
@@ -320,73 +332,79 @@ CREATE UNIQUE INDEX "EmailRepresentative_emailId_key" ON "EmailRepresentative"("
 CREATE UNIQUE INDEX "PhoneRepresentative_phoneId_key" ON "PhoneRepresentative"("phoneId");
 
 -- AddForeignKey
-ALTER TABLE "NameOrganization" ADD CONSTRAINT "NameOrganization_nameOrganizationId_fkey" FOREIGN KEY ("nameOrganizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "NameOrganization" ADD CONSTRAINT "NameOrganization_nameOrganizationId_fkey" FOREIGN KEY ("nameOrganizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Ruc" ADD CONSTRAINT "Ruc_rucId_fkey" FOREIGN KEY ("rucId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Ruc" ADD CONSTRAINT "Ruc_rucId_fkey" FOREIGN KEY ("rucId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Phone" ADD CONSTRAINT "Phone_phoneId_fkey" FOREIGN KEY ("phoneId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Phone" ADD CONSTRAINT "Phone_phoneId_fkey" FOREIGN KEY ("phoneId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Email" ADD CONSTRAINT "Email_emailId_fkey" FOREIGN KEY ("emailId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Email" ADD CONSTRAINT "Email_emailId_fkey" FOREIGN KEY ("emailId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Purpose" ADD CONSTRAINT "Purpose_purposeId_fkey" FOREIGN KEY ("purposeId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Purpose" ADD CONSTRAINT "Purpose_purposeId_fkey" FOREIGN KEY ("purposeId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DependentsBenefit" ADD CONSTRAINT "DependentsBenefit_dependentsBenefitId_fkey" FOREIGN KEY ("dependentsBenefitId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DependentsBenefit" ADD CONSTRAINT "DependentsBenefit_dependentsBenefitId_fkey" FOREIGN KEY ("dependentsBenefitId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Motive" ADD CONSTRAINT "Motive_motiveId_fkey" FOREIGN KEY ("motiveId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Beneficiary" ADD CONSTRAINT "Beneficiary_dependentsBenefitId_fkey" FOREIGN KEY ("dependentsBenefitId") REFERENCES "DependentsBenefit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "NumPreRegister" ADD CONSTRAINT "NumPreRegister_numPreRegisterId_fkey" FOREIGN KEY ("numPreRegisterId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Beneficiary" ADD CONSTRAINT "Beneficiary_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Motive" ADD CONSTRAINT "Motive_motiveId_fkey" FOREIGN KEY ("motiveId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_iessCertificationId_fkey" FOREIGN KEY ("iessCertificationId") REFERENCES "IESSCertification"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "NumPreRegister" ADD CONSTRAINT "NumPreRegister_numPreRegisterId_fkey" FOREIGN KEY ("numPreRegisterId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_sriCertificationId_fkey" FOREIGN KEY ("sriCertificationId") REFERENCES "SRICertification"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_iessCertificationId_fkey" FOREIGN KEY ("iessCertificationId") REFERENCES "IESSCertification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Street" ADD CONSTRAINT "Street_streetId_fkey" FOREIGN KEY ("streetId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_sriCertificateId_fkey" FOREIGN KEY ("sriCertificateId") REFERENCES "SRICertification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "City" ADD CONSTRAINT "City_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Address" ADD CONSTRAINT "Address_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Neighborhood" ADD CONSTRAINT "Neighborhood_neighborhoodId_fkey" FOREIGN KEY ("neighborhoodId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Street" ADD CONSTRAINT "Street_streetId_fkey" FOREIGN KEY ("streetId") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Province" ADD CONSTRAINT "Province_provinceId_fkey" FOREIGN KEY ("provinceId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "City" ADD CONSTRAINT "City_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Country" ADD CONSTRAINT "Country_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Neighborhood" ADD CONSTRAINT "Neighborhood_neighborhoodId_fkey" FOREIGN KEY ("neighborhoodId") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Coordinates" ADD CONSTRAINT "Coordinates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Province" ADD CONSTRAINT "Province_provinceId_fkey" FOREIGN KEY ("provinceId") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Representative" ADD CONSTRAINT "Representative_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Country" ADD CONSTRAINT "Country_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Name" ADD CONSTRAINT "Name_nameId_fkey" FOREIGN KEY ("nameId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Coordinates" ADD CONSTRAINT "Coordinates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "NumDoc" ADD CONSTRAINT "NumDoc_numDocId_fkey" FOREIGN KEY ("numDocId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Representative" ADD CONSTRAINT "Representative_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Role" ADD CONSTRAINT "Role_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Name" ADD CONSTRAINT "Name_nameId_fkey" FOREIGN KEY ("nameId") REFERENCES "Representative"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmailRepresentative" ADD CONSTRAINT "EmailRepresentative_emailId_fkey" FOREIGN KEY ("emailId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "NumDoc" ADD CONSTRAINT "NumDoc_numDocId_fkey" FOREIGN KEY ("numDocId") REFERENCES "Representative"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PhoneRepresentative" ADD CONSTRAINT "PhoneRepresentative_phoneId_fkey" FOREIGN KEY ("phoneId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Role" ADD CONSTRAINT "Role_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Representative"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmailRepresentative" ADD CONSTRAINT "EmailRepresentative_emailId_fkey" FOREIGN KEY ("emailId") REFERENCES "Representative"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PhoneRepresentative" ADD CONSTRAINT "PhoneRepresentative_phoneId_fkey" FOREIGN KEY ("phoneId") REFERENCES "Representative"("id") ON DELETE CASCADE ON UPDATE CASCADE;

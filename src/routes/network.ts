@@ -4,8 +4,6 @@ import * as Organization from "../controller/organization/controller";
 import * as OtherRouter from "../controller/organization/otherRoutes";
 import * as beneficiariesController from '../controller/organization/beneficiaries';
 
-
-const prisma = new PrismaClient();
 const router = express.Router();
 
 // TODO: Correccion de errores, mandar las verificaciones con ID, al final de la sentencia y las implementaciones antes, porque zod verifica antes esas 
