@@ -22,36 +22,18 @@
         "text": "Negocio",
         "state": true
     },
-    "dependentsBenefit": {
-        "text": 38,
-        "state": true,
-        "beneficiaries": [
-            {
-                "age": 25,
-                "gender": "Male",
-                "phoneNumber": "0987654321",
-                "address": {
-                    "street": "Avenida 6 Diciembre",
-                    "city": "Uio",
-                    "neighborhood": "El Inca",
-                    "province": "Pichincha",
-                    "country": "Ecuador"
-                }
-            },
-            {
-                "age": 30,
-                "gender": "Female",
-                "phoneNumber": "0987654322",
-                "address": {
-                    "street": "Avenida 10 de Agosto",
-                    "city": "Quito",
-                    "neighborhood": "La Mariscal",
-                    "province": "Pichincha",
-                    "country": "Ecuador"
-                }
-            }
-        ]
-    },
+    "beneficiaries": [
+        {
+            "age": 25,
+            "gender": "Male",
+            "phoneNumber": "0987654321"
+        },
+        {
+            "age": 30,
+            "gender": "Female",
+            "phoneNumber": "0987654322"
+        }
+    ],
     "motive": {
         "text": "Expansión",
         "state": true

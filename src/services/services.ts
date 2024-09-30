@@ -11,7 +11,7 @@ export const fetchAllOrganizations = async () => {
         phone: true,
         email: true,
         purpose: true,
-        dependentsBenefit: true,
+        beneficiaries: true,
         motive: true,
         numPreRegister: true,
         address: {
@@ -75,14 +75,12 @@ export const createOrganization = async (data: any) => {
             state: data.purpose.state
           }
         },
-        dependentsBenefit: {
-          create: {
-            text: parseInt(data.dependentsBenefit.text),
-            state: data.dependentsBenefit.state,
-            beneficiaries: {
-              create: data.dependentsBenefit.beneficiaries
-            }
-          }
+        beneficiaries: {
+          create: data.beneficiaries.map((beneficiary: any) => ({
+            age: beneficiary.age,
+            gender: beneficiary.gender,
+            phoneNumber: beneficiary.phoneNumber,
+          }))
         },
         motive: {
           create: {
@@ -219,11 +217,12 @@ export const putDataOrganization = async (id: number, data: any) => {
             state: data.purpose.state
           }
         },
-        dependentsBenefit: {
-          update: {
-            text: data.dependentsBenefit.text,
-            state: data.dependentsBenefit.state
-          }
+        beneficiaries: {
+          create: data.beneficiaries.map((beneficiary: any) => ({
+            age: beneficiary.age,
+            gender: beneficiary.gender,
+            phoneNumber: beneficiary.phoneNumber,
+          }))
         },
         motive: {
           update: {
@@ -350,7 +349,7 @@ function createPrismaUpdateObject(data: any) {
       typeof data[key] === "object" &&
       !Array.isArray(data[key])
     ) {
-      if (key === "address" || key === "representative" || key === "dependentsBenefit") {
+      if (key === "address" || key === "representative" || key === "nameOrganization" || key === "ruc" || key === "phone" || key === "email" || key === "purpose" || key === "motive" || key === "numPreRegister") {
         updateData[key] = {
           update: createPrismaUpdateObject(data[key]), // Llamada recursiva para objetos anidados
         };

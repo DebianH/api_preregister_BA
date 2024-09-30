@@ -47,8 +47,10 @@ export const getOrgnizationPersonalById = async (req: Request, res: Response, ne
 export const createBeneficiariesOrganization = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-
-        const beneficiariesData = await benificaryService.postBeneficiariesOrganization(Number(id), req.body);
+        const data = req.body;
+        
+        console.log(data);
+        const beneficiariesData = await benificaryService.putBeneficiariesOrganization(Number(id), data);
 
         if(beneficiariesData === null) {
             res.status(400).json({
@@ -69,6 +71,7 @@ export const createBeneficiariesOrganization = async (req: Request, res: Respons
             status: 500,
             message: "Error al actualizar los beneficiarios",
         });
+        next(error);
     }
 }
 

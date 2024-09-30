@@ -1,4 +1,4 @@
-import { DependentsBenefit, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { equal } from 'assert';
 import { count } from 'console';
 import { create } from 'domain';
@@ -14,11 +14,7 @@ export const fetchBeneficiariesOrganization = async () => {
                     text: true
                 }
             },
-            dependentsBenefit: {
-                select: {
-                    beneficiaries: true
-                }
-            }
+            beneficiaries: true
         }
     })
     return beneficiariesInfo;
@@ -33,57 +29,26 @@ export const fetchBeneficiariesOrganizationById = async (id: number) => {
                     text: true
                 }
             },
-            dependentsBenefit: {
-                select: {
-                    beneficiaries: true
-                }
-            }
+            beneficiaries: true
         }
     })
     return beneficiariesInfo;
 }
 
-export const postBeneficiariesOrganization = async (id: number, data: any) => {
+export const putBeneficiariesOrganization = async (id: number, data: any) => {
     try {
-        const newDependentsBenefit = await prisma.dependentsBenefit.create({
+        const beneficiariesData = await prisma.beneficiary.update({
+            where: { id: id },
             data: {
-                text: data.text,
-                state: data.state,
-                beneficiaries: {
-                    create: data.beneficiaries.map((beneficiary: { 
-                        age: number; 
-                        gender: string; 
-                        phoneNumber: string; 
-                        address: { 
-                            city: string; 
-                            country: string; 
-                            neighborhood: string; 
-                            province: string; 
-                            street: string; 
-                        };
-                    }) => ({
-                        age: beneficiary.age,
-                        gender: beneficiary.gender,
-                        phoneNumber: beneficiary.phoneNumber,
-                        address: {
-                            create: {
-                                city: beneficiary.address.city,
-                                country: beneficiary.address.country,
-                                neighborhood: beneficiary.address.neighborhood,
-                                province: beneficiary.address.province,
-                                street: beneficiary.address.street,
-                            }
-                        }
-                    })),
-                },
-                organization: {
-                    connect: { id: id }, // Conectar la organización existente
-                },
-            },
-        });
-
-        return newDependentsBenefit;
+                age: data.age,
+                gender: data.gender,
+                phoneNumber: data.phoneNumber,
+            }
+        })
+        return beneficiariesData;
     } catch (error) {
-        console.log("Error al actualizar los beneficiarios", error)
+        console.error("Error al actualizar los beneficiarios", error)
+
+        throw new Error("No se pudo actualizar los beneficiarios. Por favor, intente nuevamente.");
     }
 }
