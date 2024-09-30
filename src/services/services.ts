@@ -1,3 +1,4 @@
+import { create } from "domain";
 import prisma from "../utils/prismaClient";
 import { deletedAndResignIds } from "./updateOrderDatabase";
 import { z } from "zod";
@@ -135,6 +136,11 @@ export const createOrganization = async (data: any) => {
             latitude: data.coordinates.latitude,
             longitude: data.coordinates.longitude
           }
+        }, manipulationArea: {
+          create: {
+            imageUrl: data.manipulationArea.imageUrl,
+            state: data.manipulationArea.state
+          }
         },
         representative: {
           create: {
@@ -170,13 +176,14 @@ export const createOrganization = async (data: any) => {
             }
           }
         },
+
         stateRegistration: data.stateRegistration
       }
     });
     console.log("Nueva organización creada", newOrganization);
     return newOrganization;
   } catch (error: any) {
-    if(error instanceof z.ZodError){
+    if (error instanceof z.ZodError) {
       throw new Error("Error de validación de datos");
     }
   }
@@ -368,7 +375,7 @@ function createPrismaUpdateObject(data: any) {
 export const deleteOrganizationData = async (id: number) => {
   try {
     await prisma.$transaction(async (prisma) => {
-      
+
       const deletedOrganization = await deletedAndResignIds(id)
       return deletedOrganization;
     })

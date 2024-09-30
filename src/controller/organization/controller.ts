@@ -23,8 +23,8 @@ export const createOrganization = async (
     const parsedData = OrganizationSchema.parse(req.body);
 
     const newOrganization = await service.createOrganization(parsedData);
-    
-    if(!newOrganization) {
+
+    if (!newOrganization) {
       return res.status(400).json({ message: "Los datos no pudieron ser procesados correctamente" });
     }
     res.status(201).json({
@@ -32,7 +32,7 @@ export const createOrganization = async (
       message: "Organización creada correctamente",
       response: newOrganization,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: "Error de validación", errors: error.errors });
     }
@@ -74,7 +74,7 @@ export const getOrganizationById = async (
 
     // Verificar si la organización existe en la base de datos
     const organization = await prisma.organization.findUnique({
-      where: { id: Number(id) },  
+      where: { id: Number(id) },
       select: {
         stateRegistration: true,
         address: {
@@ -151,7 +151,7 @@ export const updatePutOrganization = async (
     const parsedData = OrganizationSchema.parse(req.body);
 
     const onUpdateOrganization = await service.putDataOrganization(productId, parsedData);
-    
+
     res.status(200).json({
       message: "La organización ha sido actualizada correctamente",
       response: onUpdateOrganization,
@@ -188,7 +188,7 @@ export const deleteOrganization = async (
         response: "Datos no válidos",
       });
     }
-    res.status(500).json({ 
+    res.status(500).json({
       status: 500,
       message: "Invalid data structure or database error",
       response: "Error inesperado",

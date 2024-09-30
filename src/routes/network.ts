@@ -14,13 +14,15 @@ router.get('/all', Organization.getAllOrganizations)
 router.get('/organizationinfo', OtherRouter.getOrganizationInfo)
 router.get('/organizationinfo/:id', OtherRouter.getOrgnizationInfoById)
 
+router.get('/organizationState/:id', OtherRouter.getStateOrganizationById)
+router.get('/organiztionArea/:id', OtherRouter.getManipulationAreaById)
 
 // From MS
 router.get('/:id', Organization.getOrganizationById)
 
 router.post('/create', Organization.createOrganization)
 
-router.put('/:id', Organization.updatePutOrganization )
+router.put('/:id', Organization.updatePutOrganization)
 
 router.patch('/:id', Organization.updatePatchOrganization)
 

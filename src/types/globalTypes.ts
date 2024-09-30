@@ -97,6 +97,10 @@ export const OrganizationSchema = z.object({
             state: z.boolean(),
         }),
     }).optional(),
+    manipulationArea: z.object({
+        imageUrl: z.string().optional(),
+        state: z.boolean(),
+    }).optional(),
     stateRegistration: z.string().optional(),
 });
 

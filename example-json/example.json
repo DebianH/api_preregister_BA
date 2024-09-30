@@ -96,6 +96,10 @@
         "latitude": "-10.123",
         "longitude": "-72.001"
     },
+    "manipulationArea": {
+        "imageUrl": "http://example.com/nicexd.jpg",
+        "state": true
+    },
     "representative": {
         "name": {
             "text": "Oscar Calles",
