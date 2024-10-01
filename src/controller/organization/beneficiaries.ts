@@ -48,9 +48,11 @@ export const createBeneficiariesOrganization = async (req: Request, res: Respons
     try {
         const { id } = req.params;
         const data = req.body;
-        
+
+        console.log(id);
         console.log(data);
-        const beneficiariesData = await benificaryService.putBeneficiariesOrganization(Number(id), data);
+        
+        const beneficiariesData = await benificaryService.createBeneficiariesOrganization(Number(id), data);
 
         if(beneficiariesData === null) {
             res.status(400).json({

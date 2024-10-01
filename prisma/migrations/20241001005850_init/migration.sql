@@ -16,7 +16,7 @@ CREATE TABLE "NameOrganization" (
     "id" SERIAL NOT NULL,
     "text" TEXT NOT NULL,
     "state" BOOLEAN NOT NULL,
-    "nameOrganizationId" INTEGER,
+    "nameOrganizationId" INTEGER NOT NULL,
 
     CONSTRAINT "NameOrganization_pkey" PRIMARY KEY ("id")
 );
@@ -62,23 +62,12 @@ CREATE TABLE "Purpose" (
 );
 
 -- CreateTable
-CREATE TABLE "DependentsBenefit" (
-    "id" SERIAL NOT NULL,
-    "text" INTEGER NOT NULL,
-    "state" BOOLEAN NOT NULL,
-    "dependentsBenefitId" INTEGER NOT NULL,
-
-    CONSTRAINT "DependentsBenefit_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Beneficiary" (
     "id" SERIAL NOT NULL,
     "age" INTEGER NOT NULL,
     "gender" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
-    "dependentsBenefitId" INTEGER NOT NULL,
-    "addressId" INTEGER NOT NULL,
+    "organizationId" INTEGER NOT NULL,
 
     CONSTRAINT "Beneficiary_pkey" PRIMARY KEY ("id")
 );
@@ -104,13 +93,11 @@ CREATE TABLE "NumPreRegister" (
 );
 
 -- CreateTable
-CREATE TABLE "Certificates" (
+CREATE TABLE "Certificate" (
     "id" SERIAL NOT NULL,
     "organizationId" INTEGER NOT NULL,
-    "iessCertificationId" INTEGER,
-    "sriCertificateId" INTEGER,
 
-    CONSTRAINT "Certificates_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Certificate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -119,6 +106,7 @@ CREATE TABLE "IESSCertification" (
     "imageurl" TEXT NOT NULL,
     "state" BOOLEAN NOT NULL,
     "updatedat" TIMESTAMP(3) NOT NULL,
+    "iessCertificationId" INTEGER NOT NULL,
 
     CONSTRAINT "IESSCertification_pkey" PRIMARY KEY ("id")
 );
@@ -129,6 +117,7 @@ CREATE TABLE "SRICertification" (
     "imageurl" TEXT NOT NULL,
     "state" BOOLEAN NOT NULL,
     "updatedat" TIMESTAMP(3) NOT NULL,
+    "sriCertificateId" INTEGER NOT NULL,
 
     CONSTRAINT "SRICertification_pkey" PRIMARY KEY ("id")
 );
@@ -275,7 +264,7 @@ CREATE UNIQUE INDEX "Email_emailId_key" ON "Email"("emailId");
 CREATE UNIQUE INDEX "Purpose_purposeId_key" ON "Purpose"("purposeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DependentsBenefit_dependentsBenefitId_key" ON "DependentsBenefit"("dependentsBenefitId");
+CREATE UNIQUE INDEX "Beneficiary_organizationId_key" ON "Beneficiary"("organizationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Motive_motiveId_key" ON "Motive"("motiveId");
@@ -284,13 +273,13 @@ CREATE UNIQUE INDEX "Motive_motiveId_key" ON "Motive"("motiveId");
 CREATE UNIQUE INDEX "NumPreRegister_numPreRegisterId_key" ON "NumPreRegister"("numPreRegisterId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Certificates_organizationId_key" ON "Certificates"("organizationId");
+CREATE UNIQUE INDEX "Certificate_organizationId_key" ON "Certificate"("organizationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Certificates_iessCertificationId_key" ON "Certificates"("iessCertificationId");
+CREATE UNIQUE INDEX "IESSCertification_iessCertificationId_key" ON "IESSCertification"("iessCertificationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Certificates_sriCertificateId_key" ON "Certificates"("sriCertificateId");
+CREATE UNIQUE INDEX "SRICertification_sriCertificateId_key" ON "SRICertification"("sriCertificateId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Address_organizationId_key" ON "Address"("organizationId");
@@ -347,13 +336,7 @@ ALTER TABLE "Email" ADD CONSTRAINT "Email_emailId_fkey" FOREIGN KEY ("emailId") 
 ALTER TABLE "Purpose" ADD CONSTRAINT "Purpose_purposeId_fkey" FOREIGN KEY ("purposeId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DependentsBenefit" ADD CONSTRAINT "DependentsBenefit_dependentsBenefitId_fkey" FOREIGN KEY ("dependentsBenefitId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Beneficiary" ADD CONSTRAINT "Beneficiary_dependentsBenefitId_fkey" FOREIGN KEY ("dependentsBenefitId") REFERENCES "DependentsBenefit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Beneficiary" ADD CONSTRAINT "Beneficiary_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Beneficiary" ADD CONSTRAINT "Beneficiary_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Motive" ADD CONSTRAINT "Motive_motiveId_fkey" FOREIGN KEY ("motiveId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -362,13 +345,13 @@ ALTER TABLE "Motive" ADD CONSTRAINT "Motive_motiveId_fkey" FOREIGN KEY ("motiveI
 ALTER TABLE "NumPreRegister" ADD CONSTRAINT "NumPreRegister_numPreRegisterId_fkey" FOREIGN KEY ("numPreRegisterId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_iessCertificationId_fkey" FOREIGN KEY ("iessCertificationId") REFERENCES "IESSCertification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Certificate" ADD CONSTRAINT "Certificate_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "IESSCertification" ADD CONSTRAINT "IESSCertification_iessCertificationId_fkey" FOREIGN KEY ("iessCertificationId") REFERENCES "Certificate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Certificates" ADD CONSTRAINT "Certificates_sriCertificateId_fkey" FOREIGN KEY ("sriCertificateId") REFERENCES "SRICertification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SRICertification" ADD CONSTRAINT "SRICertification_sriCertificateId_fkey" FOREIGN KEY ("sriCertificateId") REFERENCES "Certificate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

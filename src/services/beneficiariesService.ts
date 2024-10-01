@@ -35,20 +35,29 @@ export const fetchBeneficiariesOrganizationById = async (id: number) => {
     return beneficiariesInfo;
 }
 
-export const putBeneficiariesOrganization = async (id: number, data: any) => {
-    try {
-        const beneficiariesData = await prisma.beneficiary.update({
-            where: { id: id },
-            data: {
-                age: data.age,
-                gender: data.gender,
-                phoneNumber: data.phoneNumber,
-            }
-        })
-        return beneficiariesData;
-    } catch (error) {
-        console.error("Error al actualizar los beneficiarios", error)
+export const createBeneficiariesOrganization = async (id: number, data: any) => {
 
-        throw new Error("No se pudo actualizar los beneficiarios. Por favor, intente nuevamente.");
+    // for (const beneficiary of data.beneficiaries) {
+    //     console.log(`Age: ${beneficiary.age}, Gender: ${beneficiary.gender}, Phone: ${beneficiary.phoneNumber}`);
+    // }
+
+
+    // Crear el nuevo beneficiario sin necesidad de pasar id ni organizationId en el JSON
+    if (Array.isArray(data.beneficiaries)) {
+        for (const beneficiary of data.beneficiaries) {
+            const beneficiaryData = await prisma.beneficiary.create({
+                data: {
+                    age: beneficiary.age,
+                    gender: beneficiary.gender,
+                    phoneNumber: beneficiary.phoneNumber,
+                    organizationId: id
+                }
+            });
+            return beneficiaryData;
+
+            console.log('Beneficiary created:', beneficiaryData);
+        }
+    } else {
+        console.error('Beneficiaries should be an array.');
     }
 }

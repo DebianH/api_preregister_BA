@@ -75,13 +75,13 @@ export const createOrganization = async (data: any) => {
             state: data.purpose.state
           }
         },
-        beneficiaries: {
-          create: data.beneficiaries.map((beneficiary: any) => ({
-            age: beneficiary.age,
-            gender: beneficiary.gender,
-            phoneNumber: beneficiary.phoneNumber,
-          }))
-        },
+        // beneficiaries: {
+        //   create: data.beneficiaries.map((beneficiary: any) => ({
+        //     age: beneficiary.age,
+        //     gender: beneficiary.gender,
+        //     phoneNumber: beneficiary.phoneNumber
+        //   }))
+        // },
         motive: {
           create: {
             text: data.motive.text,
@@ -171,7 +171,6 @@ export const createOrganization = async (data: any) => {
         stateRegistration: data.stateRegistration
       }
     });
-    console.log("Nueva organización creada", newOrganization);
     return newOrganization;
   } catch (error: any) {
     if(error instanceof z.ZodError){
