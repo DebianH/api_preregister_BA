@@ -72,3 +72,24 @@ export const createBeneficiariesOrganization = async (req: Request, res: Respons
     }
 }
 
+export const createFoodHandlers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { organizationId } = req.params; // ID de la organización
+        const foodHandlersData = req.body; // Array de foodHandlers a crear
+
+        // Lógica para crear múltiples foodHandlers
+        const createdFoodHandlers = await benificaryService.createFoodHandlers(Number(organizationId), foodHandlersData);
+
+        res.status(201).json({
+            status: 201,
+            message: "Food handlers creados correctamente",
+            response: createdFoodHandlers,
+        });
+    } catch (error) {
+        console.error("Error al crear los food handlers", error);
+        res.status(500).json({
+            status: 500,
+            message: "Error al crear los food handlers",
+        });
+    }
+};

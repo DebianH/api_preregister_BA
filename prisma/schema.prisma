@@ -27,6 +27,8 @@ model Organization {
   numPreRegister    NumPreRegister?
   address           Address?
   certificates      Certificate[]
+  constitutionData  ConstitutionData[]
+  foodHandler       FoodHandler[]
 }
 
 model ManipulationArea {
@@ -145,6 +147,89 @@ model SRICertification {
 
   certificates     Certificate @relation(fields: [sriCertificateId], references: [id], onDelete: Cascade)
   sriCertificateId Int         @unique
+}
+
+model ConstitutionData {
+  id            Int   @id @default(autoincrement())
+
+  miesConstitution    MIESConstitution?
+  curiaConstitution   CURIAConstitution?
+  mspConstitution     MSPConstitution?
+  mineducConstitution MINEDUCConstitution?
+
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId      Int         @unique
+}
+
+model MIESConstitution{
+  id        Int       @id @default(autoincrement())
+  imageurl  String 
+  state     Boolean
+  updatedat DateTime  @updatedAt
+  
+  constitutionData     ConstitutionData @relation(fields: [MIESConstitutionId], references: [id], onDelete: Cascade)
+  MIESConstitutionId    Int     @unique
+}
+
+model CURIAConstitution {
+  id        Int       @id @default(autoincrement())
+  imageurl  String
+  state     Boolean
+  updatedat DateTime  @updatedAt
+
+  constitutionData     ConstitutionData @relation(fields: [CURIAConstitutionId], references: [id], onDelete: Cascade)
+  CURIAConstitutionId    Int     @unique
+}
+
+model MSPConstitution {
+  id        Int       @id @default(autoincrement())
+  imageurl  String
+  state     Boolean
+  updatedat DateTime  @updatedAt
+
+  constitutionData     ConstitutionData @relation(fields: [MSPConstitutionId], references: [id], onDelete: Cascade)
+  MSPConstitutionId    Int     @unique
+}
+
+model MINEDUCConstitution {
+  id        Int       @id @default(autoincrement())
+  imageurl  String
+  state     Boolean
+  updatedat DateTime  @updatedAt
+
+  constitutionData     ConstitutionData @relation(fields: [MINEDUCConstitutionId], references: [id], onDelete: Cascade)
+  MINEDUCConstitutionId    Int     @unique
+}
+
+model FoodHandler{
+  id            Int     @id @default(autoincrement())
+  identityCard  String
+
+  medicalCertification      MedicalCertification?
+  foodHandlingCertification FoodHandlingCertificate? 
+
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId      Int         
+}
+
+model MedicalCertification{
+  id          Int     @id @default(autoincrement())
+  imageurl    String
+  state       Boolean
+  updatedat   DateTime @updatedAt
+
+  foodHandler           FoodHandler @relation(fields: [medicalCertificateId], references: [id], onDelete: Cascade)
+  medicalCertificateId  Int         @unique
+}
+
+model FoodHandlingCertificate{
+  id          Int       @id @default(autoincrement())
+  imageurl    String
+  state       Boolean
+  updatedat   DateTime  @updatedAt
+
+  foodHandler                 FoodHandler @relation(fields: [foodHandlingCertificateId], references: [id], onDelete: Cascade)
+  foodHandlingCertificateId   Int         @unique
 }
 
 model Address {

@@ -17,6 +17,9 @@ router.get('/organizationinfo/:id', OtherRouter.getOrgnizationInfoById)
 router.get('/organizationState/:id', OtherRouter.getStateOrganizationById)
 router.get('/organiztionArea/:id', OtherRouter.getManipulationAreaById)
 
+router.get('/organzationConstitution/:id', OtherRouter.getConstitutionById)
+router.get('/organizationHandler/:id', OtherRouter.getFoodHandlerById)
+
 // From MS
 router.get('/:id', Organization.getOrganizationById)
 

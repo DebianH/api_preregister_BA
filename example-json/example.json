@@ -1,7 +1,5 @@
 {
     "stateRegistration": "PENDING",
-    "createdAt": "2023-10-01T00:00:00.000Z",
-    "updatedAt": "2023-10-01T00:00:00.000Z",
     "nameOrganization": {
         "text": "Fundación Esperanza",
         "state": true
@@ -70,6 +68,39 @@
             "state": true
         }
     },
+    "constitutionData": [
+        {
+            "MIESConstitution": {
+                "imageurl": "http://example.com/MIES-const.jpg",
+                "state": true
+            },
+            "CURIAConstitution": {
+                "imageurl": "http://example.com/CURIA-const.jpg",
+                "state": true
+            }, 
+            "MSPConstitution": {
+                "imageurl": "http://example.com/MSP-const.jpg",
+                "state": true
+            }, 
+            "MINEDUCConstitution": {
+                "imageurl": "http://example.com/MINEDUC-const.jpg",
+                "state": true
+            }
+        }
+    ],
+    "foodHandler": [
+      {
+        "idetifyCard": "1718181818",
+        "medicalCertification": {
+          "imageurl": "http://example.com/medical-cert.jpg",
+          "state": true
+        },
+        "foodHandlingCertification": {
+          "imageurl": "http://example.com/handling-cert.jpg",
+          "state": true
+        }
+      }
+    ],
     "address": {
         "street": {
             "text": "Avenida 6 Diciembre",

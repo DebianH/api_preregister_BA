@@ -87,3 +87,35 @@ export const postBeneficiariesOrganization = async (id: number, data: any) => {
         console.log("Error al actualizar los beneficiarios", error)
     }
 }
+
+export const createFoodHandlers = async (organizationId: number, foodHandlersData: any) => {
+    try {
+        const createdFoodHandlers = await prisma.foodHandler.createMany({
+            data: foodHandlersData.map((foodHandler: {
+                identityCard: string;
+                medicalCertification: { imageurl: string; state: boolean };
+                foodHandlingCertification: { imageurl: string; state: boolean };
+            }) => ({
+                identityCard: foodHandler.identityCard,
+                medicalCertification: {
+                    create: {
+                        imageurl: foodHandler.medicalCertification.imageurl,
+                        state: foodHandler.medicalCertification.state
+                    }
+                },
+                foodHandlingCertification: {
+                    create: {
+                        imageurl: foodHandler.foodHandlingCertification.imageurl,
+                        state: foodHandler.foodHandlingCertification.state
+                    }
+                },
+                organizationId: organizationId // Conectar al foodHandler con la organización
+            }))
+        });
+
+        return createdFoodHandlers;
+    } catch (error) {
+        console.log("Error al crear los food handlers", error);
+        throw new Error("No se pudo crear los food handlers");
+    }
+}
