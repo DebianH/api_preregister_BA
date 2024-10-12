@@ -11,7 +11,7 @@ export const fetchAllOrganizations = async () => {
         phone: true,
         email: true,
         purpose: true,
-        beneficiaries: true,
+        beneficiaryDocument: true,
         motive: true,
         numPreRegister: true,
         address: {
@@ -53,8 +53,8 @@ export const createOrganization = async (data: any) => {
         },
         ruc: {
           create: {
-            text: parseInt(data.ruc.text),
-            state: data.ruc.state
+            rucText: data.ruc.rucText,
+            documentProof: data.ruc.documentProof,
           }
         },
         phone: {
@@ -75,13 +75,11 @@ export const createOrganization = async (data: any) => {
             state: data.purpose.state
           }
         },
-        // beneficiaries: {
-        //   create: data.beneficiaries.map((beneficiary: any) => ({
-        //     age: beneficiary.age,
-        //     gender: beneficiary.gender,
-        //     phoneNumber: beneficiary.phoneNumber
-        //   }))
-        // },
+        beneficiaryDocument: {
+          create: {
+            documentProof: data.beneficiaryDocument.documentProof
+          }
+        },
         motive: {
           create: {
             text: data.motive.text,
@@ -134,6 +132,22 @@ export const createOrganization = async (data: any) => {
             longitude: data.coordinates.longitude
           }
         },
+        certificates: {
+          create: {
+            iessCertificate: {
+              create: {
+                imageurl: data.certificates.iessCertificate.imageurl,
+                state: data.certificates.iessCertificate.state
+              }
+            },
+            sriCertificate: {
+              create: {
+                imageurl: data.certificates.sriCertificate.imageurl,
+                state: data.certificates.sriCertificate.state
+              }
+            }
+          }
+        },
         representative: {
           create: {
             name: {
@@ -173,7 +187,7 @@ export const createOrganization = async (data: any) => {
     });
     return newOrganization;
   } catch (error: any) {
-    if(error instanceof z.ZodError){
+    if (error instanceof z.ZodError) {
       throw new Error("Error de validación de datos");
     }
   }
@@ -194,8 +208,8 @@ export const putDataOrganization = async (id: number, data: any) => {
         },
         ruc: {
           update: {
-            text: parseInt(data.ruc.text),
-            state: data.ruc.state
+            rucText: data.ruc.rucText,
+            documentProof: data.ruc.documentProof,
           }
         },
         phone: {
@@ -216,11 +230,9 @@ export const putDataOrganization = async (id: number, data: any) => {
             state: data.purpose.state
           }
         },
-        beneficiaries: {
-          create: data.beneficiaries.map((beneficiary: any) => ({
-            age: beneficiary.age,
-            gender: beneficiary.gender,
-            phoneNumber: beneficiary.phoneNumber,
+        beneficiaryDocument: {
+          update: data.beneficiaryDocument.map((beneficiary: any) => ({
+            documentProof: beneficiary.documentProof
           }))
         },
         motive: {
@@ -366,7 +378,7 @@ function createPrismaUpdateObject(data: any) {
 export const deleteOrganizationData = async (id: number) => {
   try {
     await prisma.$transaction(async (prisma) => {
-      
+
       const deletedOrganization = await deletedAndResignIds(id)
       return deletedOrganization;
     })

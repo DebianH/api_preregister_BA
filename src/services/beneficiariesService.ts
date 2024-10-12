@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { equal } from 'assert';
-import { count } from 'console';
-import { create } from 'domain';
 import { Request, Response, NextFunction } from 'express';
+import { read } from 'fs';
+import { Readable } from 'stream';
+
+
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,7 @@ export const fetchBeneficiariesOrganization = async () => {
                     text: true
                 }
             },
-            beneficiaries: true
+            beneficiaryDocument: true
         }
     })
     return beneficiariesInfo;
@@ -29,35 +30,23 @@ export const fetchBeneficiariesOrganizationById = async (id: number) => {
                     text: true
                 }
             },
-            beneficiaries: true
+            beneficiaryDocument: true
         }
     })
     return beneficiariesInfo;
 }
 
-export const createBeneficiariesOrganization = async (id: number, data: any) => {
+export const updateListBeneficiaries = async (id: number, data: any) => {
 
-    // for (const beneficiary of data.beneficiaries) {
-    //     console.log(`Age: ${beneficiary.age}, Gender: ${beneficiary.gender}, Phone: ${beneficiary.phoneNumber}`);
-    // }
+    const buffer = Buffer.from(data.beneficiaryDocument.documentProof, "base64");
 
-
-    // Crear el nuevo beneficiario sin necesidad de pasar id ni organizationId en el JSON
-    if (Array.isArray(data.beneficiaries)) {
-        for (const beneficiary of data.beneficiaries) {
-            const beneficiaryData = await prisma.beneficiary.create({
-                data: {
-                    age: beneficiary.age,
-                    gender: beneficiary.gender,
-                    phoneNumber: beneficiary.phoneNumber,
-                    organizationId: id
-                }
-            });
-            return beneficiaryData;
-
-            console.log('Beneficiary created:', beneficiaryData);
+    return prisma.beneficiaryDocumentProof.update({
+        where: { id: id },
+        data: {
+            documentProof: buffer
         }
-    } else {
-        console.error('Beneficiaries should be an array.');
-    }
+    })
 }
+
+
+

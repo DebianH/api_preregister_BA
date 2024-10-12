@@ -8,7 +8,8 @@ const router: Application = express();
 
 router.get('/orgbeneficiarypersonal', beneficiariesController.getbeneficiariesFromOrganization)
 router.get('/orgbeneficiarypersonal/:id', beneficiariesController.getOrgnizationPersonalById)
-router.post('/orgbeneficiarypersonal/:id', beneficiariesController.createBeneficiariesOrganization)
+router.patch('/orgbeneficiarypersonal/:id', beneficiariesController.updateListBeneficiaries)
+router.get('/beneficiaryPersonal/:id', beneficiariesController.getDocumentProofById)
 
 
 export default router;

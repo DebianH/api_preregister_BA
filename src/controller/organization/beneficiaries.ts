@@ -2,12 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import * as benificaryService from "../../services/beneficiariesService";
 import { IdSchema, OrganizationSchema } from "../../types/globalTypes";
 import { PrismaClient } from "@prisma/client";
+import { ReadStream } from "fs";
+import { Readable } from "stream";
 
 const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] });
 export const getbeneficiariesFromOrganization = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const organizationPersonal = await benificaryService.fetchBeneficiariesOrganization()
-        
+
         res.status(200).json({
             status: 200,
             message: "Informacion de las personas beneficiarias las Organizaciones obtenidas exitosamente",
@@ -44,24 +46,13 @@ export const getOrgnizationPersonalById = async (req: Request, res: Response, ne
 }
 
 //TODO: Arreglar el metodo update, para que se pueda actualizar la lista beneficiarios, revisar claves foraneas
-export const createBeneficiariesOrganization = async (req: Request, res: Response, next: NextFunction) => {
+export const updateListBeneficiaries = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const data = req.body;
 
-        console.log(id);
-        console.log(data);
-        
-        const beneficiariesData = await benificaryService.createBeneficiariesOrganization(Number(id), data);
+        const beneficiariesData = await benificaryService.updateListBeneficiaries(Number(id), data);
 
-        if(beneficiariesData === null) {
-            res.status(400).json({
-                status: 400,
-                message: "Error al actualizar los beneficiarios",
-                response: beneficiariesData
-            });
-        }
-        
         res.status(200).json({
             status: 200,
             message: "Beneficiarios actualizados correctamente",
@@ -75,5 +66,43 @@ export const createBeneficiariesOrganization = async (req: Request, res: Respons
         });
         next(error);
     }
+}
+
+export const getDocumentProofById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const file = await prisma.beneficiaryDocumentProof.findUnique({
+            where: { id: Number(id) }
+        });        
+    
+        if (!file || !file.documentProof) {
+            return res.status(404).send('Archivo no encontrado');
+        }
+    
+        // Configurar el encabezado para la descarga de archivo
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=document.pdf');
+    
+        // Crear un Readable stream a partir del Buffer almacenado en `file.documentProof`
+        const readStream = new Readable({
+            read() {
+                this.push(file.documentProof);
+                this.push(null);
+            }
+        });
+        readStream.pipe(res.status(200).json({
+            status: 200,
+            message: "Documento obtenido correctamente",
+            response: "Descargarlo por el navegador"
+        }));
+    
+    } catch (error) {
+        console.error("Error al obtener el documento", error);
+        res.status(500).json({
+            error: "Error de servidor"  
+        })
+    }
+
 }
 

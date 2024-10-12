@@ -22,61 +22,74 @@ model Organization {
   motive           Motive?
   coordinates      Coordinates?
 
-  representative Representative?
-  beneficiaries  Beneficiary[]
-  numPreRegister NumPreRegister?
-  address        Address?
-  certificates   Certificate[]
+  representative      Representative?
+  beneficiaryDocument BeneficiaryDocumentProof?
+  numPreRegister      NumPreRegister?
+  address             Address?
+  certificates        Certificate?
 }
 
 model NameOrganization {
-  id                 Int          @id @default(autoincrement())
-  text               String
-  state              Boolean
+  id    Int     @id @default(autoincrement())
+  text  String
+  state Boolean
+
   organization       Organization @relation(fields: [nameOrganizationId], references: [id], onDelete: Cascade)
   nameOrganizationId Int          @unique
+
+  @@unique([id, nameOrganizationId])
 }
 
 model Ruc {
-  id           Int          @id @default(autoincrement())
-  text         Int
-  state        Boolean
-  organization Organization @relation(fields: [rucId], references: [id], onDelete: Cascade)
-  rucId        Int          @unique
-}
-
-model Phone {
-  id           Int          @id @default(autoincrement())
-  text         String
-  state        Boolean
-  organization Organization @relation(fields: [phoneId], references: [id], onDelete: Cascade)
-  phoneId      Int          @unique
-}
-
-model Email {
-  id           Int          @id @default(autoincrement())
-  text         String
-  state        Boolean
-  organization Organization @relation(fields: [emailId], references: [id], onDelete: Cascade)
-  emailId      Int          @unique
-}
-
-model Purpose {
-  id           Int          @id @default(autoincrement())
-  text         String
-  state        Boolean
-  organization Organization @relation(fields: [purposeId], references: [id], onDelete: Cascade)
-  purposeId    Int          @unique
-}
-
-model Beneficiary {
-  id          Int    @id @default(autoincrement())
-  age         Int
-  gender      String
-  phoneNumber String
+  id            Int    @id @default(autoincrement())
+  rucText       String
+  documentProof  Bytes //This is BLOB
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId Int          @unique
+
+  @@unique([id, organizationId])
+}
+
+model Phone {
+  id    Int     @id @default(autoincrement())
+  text  String
+  state Boolean
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
+}
+
+model Email {
+  id             Int          @id @default(autoincrement())
+  text           String
+  state          Boolean
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
+}
+
+model Purpose {
+  id             Int          @id @default(autoincrement())
+  text           String
+  state          Boolean
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
+}
+
+model BeneficiaryDocumentProof {
+  id            Int    @id @default(autoincrement())
+  documentProof  Bytes //This is BLOB based
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model Motive {
@@ -84,8 +97,10 @@ model Motive {
   text  String
   state Boolean
 
-  organization Organization @relation(fields: [motiveId], references: [id], onDelete: Cascade)
-  motiveId     Int          @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model NumPreRegister {
@@ -93,8 +108,10 @@ model NumPreRegister {
   text  Int
   state Boolean
 
-  organization     Organization @relation(fields: [numPreRegisterId], references: [id], onDelete: Cascade)
-  numPreRegisterId Int          @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model Certificate {
@@ -105,6 +122,8 @@ model Certificate {
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model IESSCertification {
@@ -115,6 +134,8 @@ model IESSCertification {
 
   certificates        Certificate @relation(fields: [iessCertificationId], references: [id], onDelete: Cascade)
   iessCertificationId Int         @unique
+
+  @@unique([id, iessCertificationId])
 }
 
 model SRICertification {
@@ -123,8 +144,10 @@ model SRICertification {
   state     Boolean
   updatedat DateTime @updatedAt
 
-  certificates     Certificate @relation(fields: [sriCertificateId], references: [id], onDelete: Cascade)
-  sriCertificateId Int         @unique
+  certificates  Certificate @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+  certificateId Int         @unique
+
+  @@unique([id, certificateId])
 }
 
 model Address {
@@ -137,6 +160,8 @@ model Address {
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model Street {
@@ -144,8 +169,10 @@ model Street {
   text  String
   state Boolean
 
-  address  Address @relation(fields: [streetId], references: [id], onDelete: Cascade)
-  streetId Int     @unique
+  address        Address @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int     @unique
+
+  @@unique([id, organizationId])
 }
 
 model City {
@@ -153,8 +180,10 @@ model City {
   text  String
   state Boolean
 
-  address Address @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  cityId  Int     @unique
+  address        Address @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int     @unique
+
+  @@unique([id, organizationId])
 }
 
 model Neighborhood {
@@ -162,8 +191,10 @@ model Neighborhood {
   text  String
   state Boolean
 
-  address        Address @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
-  neighborhoodId Int     @unique
+  address        Address @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int     @unique
+
+  @@unique([id, organizationId])
 }
 
 model Province {
@@ -171,8 +202,10 @@ model Province {
   text  String
   state Boolean
 
-  address    Address @relation(fields: [provinceId], references: [id], onDelete: Cascade)
-  provinceId Int     @unique
+  address        Address @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int     @unique
+
+  @@unique([id, organizationId])
 }
 
 model Country {
@@ -180,8 +213,10 @@ model Country {
   text  String
   state Boolean
 
-  address   Address @relation(fields: [countryId], references: [id], onDelete: Cascade)
-  countryId Int     @unique
+  address        Address @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int     @unique
+
+  @@unique([id, organizationId])
 }
 
 model Coordinates {
@@ -191,18 +226,22 @@ model Coordinates {
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model Representative {
   id                  Int                  @id @default(autoincrement())
-  organizationId      Int                  @unique
   emailRepresentative EmailRepresentative?
   name                Name?
   numDoc              NumDoc?
   phoneRepresentative PhoneRepresentative?
+  role                Role?
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role         Role?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int          @unique
+
+  @@unique([id, organizationId])
 }
 
 model Name {
@@ -210,8 +249,10 @@ model Name {
   text  String
   state Boolean
 
-  representative Representative @relation(fields: [nameId], references: [id], onDelete: Cascade)
-  nameId         Int            @unique
+  representative Representative @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int            @unique
+
+  @@unique([id, organizationId])
 }
 
 model NumDoc {
@@ -219,8 +260,10 @@ model NumDoc {
   text  String
   state Boolean
 
-  representative Representative @relation(fields: [numDocId], references: [id], onDelete: Cascade)
-  numDocId       Int            @unique
+  representative Representative @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int            @unique
+
+  @@unique([id, organizationId])
 }
 
 model Role {
@@ -228,8 +271,10 @@ model Role {
   text  String
   state Boolean
 
-  representative Representative @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId         Int            @unique
+  representative Representative @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int            @unique
+
+  @@unique([id, organizationId])
 }
 
 model EmailRepresentative {
@@ -237,8 +282,10 @@ model EmailRepresentative {
   text  String
   state Boolean
 
-  representative Representative @relation(fields: [emailId], references: [id], onDelete: Cascade)
-  emailId        Int            @unique
+  representative Representative @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int            @unique
+
+  @@unique([id, organizationId])
 }
 
 model PhoneRepresentative {
@@ -246,8 +293,10 @@ model PhoneRepresentative {
   text  String
   state Boolean
 
-  representative Representative @relation(fields: [phoneId], references: [id], onDelete: Cascade)
-  phoneId        Int            @unique
+  representative Representative @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId Int            @unique
+
+  @@unique([id, organizationId])
 }
 
 enum stateRegistration {
