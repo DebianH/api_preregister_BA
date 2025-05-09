@@ -16,15 +16,15 @@ const PORT = process.env.PORT ?? 3005;
 const limitRateMinites = 10;
 const requestLimit = 10;
 
-const limiter = rateLimit({
-  windowMs: limitRateMinites * 60 * 1000, // 15 minutos
-  max: requestLimit, // Límite de 100 solicitudes por ventana por IP
-  standardHeaders: true, // Devolver info en los headers 'RateLimit-*'
-  legacyHeaders: false, // Deshabilitar los headers 'X-RateLimit-*'
-  message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo después de 15 minutos'
-})
+// const limiter = rateLimit({
+//   windowMs: limitRateMinites * 60 * 1000, // 15 minutos
+//   max: requestLimit, // Límite de 100 solicitudes por ventana por IP
+//   standardHeaders: true, // Devolver info en los headers 'RateLimit-*'
+//   legacyHeaders: false, // Deshabilitar los headers 'X-RateLimit-*'
+//   message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo después de 15 minutos'
+// })
 
-app.use(limiter);
+// app.use(limiter);
 
 app.use(cors());
 app.use(express.json());

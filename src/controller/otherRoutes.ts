@@ -23,7 +23,7 @@ export const getOrganizationInfo = async (req:Request, res:Response, next:NextFu
 export const getOrgnizationInfoById = async (req:Request, res:Response, next:NextFunction) => {
     try{
         const { id } = req.params;
-        const organizationInfo = await otherService.fetchInfoOrganizationById(Number(id))
+        const organizationInfo = await otherService.fetchInfoOrganizationById(id)
         res.status(200).json({ 
             status: 200,
             message: "Informacion de la Organización obtenida exitosamente",

@@ -1,15 +1,13 @@
-import { errorHandlerServer } from "../middleware/errorHandler";
 import prisma from "../utils/prismaClient";
 import { z } from "zod";
-import { deletedAndResignIds } from "./updateOrderDatabase";
 
 export const fetchAllOrganizations = async () => {
   const selectFields = {
     select: {
       text: true,
-      state: true
-    }
-  }
+      state: true,
+    },
+  };
   try {
     const organizations = await prisma.organization.findMany({
       select: {
@@ -29,13 +27,13 @@ export const fetchAllOrganizations = async () => {
             neighborhood: selectFields,
             province: selectFields,
             country: selectFields,
-          }
+          },
         },
         coordinates: {
           select: {
             latitude: true,
-            longitude: true
-          }
+            longitude: true,
+          },
         },
         representative: {
           select: {
@@ -44,17 +42,15 @@ export const fetchAllOrganizations = async () => {
             role: selectFields,
             emailRepresentative: selectFields,
             phoneRepresentative: selectFields,
-          }
+          },
         },
-        stateRegistration: true
-      }
+        stateRegistration: true,
+      },
     });
 
-    
     return organizations;
   } catch (error: any) {
-    console.error("Error al obtener las organizaciones", error);
-    return [];
+    throw new Error("No se encontraron organizaciones");
   }
 };
 
@@ -65,16 +61,7 @@ const createNestedField = (field: any) => ({
   },
 });
 
-const createAddressField = (field: any) => ({
-  create: {
-    text: field.text,
-    state: field.state,
-  },
-});
-
 export const createOrganization = async (data: any) => {
-
-
   try {
     const {
       nameOrganization,
@@ -91,10 +78,34 @@ export const createOrganization = async (data: any) => {
       stateRegistration,
     } = data;
 
+    // Check if organization with same RUC exists
+    const existingOrganization = await prisma.organization.findFirst({
+      where: {
+        OR: [
+          { nameOrganization: { text: nameOrganization.text } },
+          { ruc: { text: ruc.text } },
+          { email: { text: email.text } },
+          { phone: { text: phone.text } },
+          { numPreRegister: { text: parseInt(numPreRegister.text) } },
+          {
+            representative: {
+              numDoc: { text: representative.numDoc.text },
+            },
+          },
+        ],
+      },
+    });
+
+    if (existingOrganization) {
+      throw new Error(
+        "Ya existe una organización con algunos de estos datos Colocados"
+      );
+    }
+
     const newOrganization = await prisma.organization.create({
       data: {
         nameOrganization: createNestedField(nameOrganization),
-        ruc: createAddressField(ruc),
+        ruc: createNestedField(ruc),
         phone: createNestedField(phone),
         email: createNestedField(email),
         purpose: createNestedField(purpose),
@@ -108,11 +119,11 @@ export const createOrganization = async (data: any) => {
         },
         address: {
           create: {
-            street: createAddressField(address.street),
-            city: createAddressField(address.city),
-            neighborhood: createAddressField(address.neighborhood),
-            province: createAddressField(address.province),
-            country: createAddressField(address.country),
+            street: createNestedField(address.street),
+            city: createNestedField(address.city),
+            neighborhood: createNestedField(address.neighborhood),
+            province: createNestedField(address.province),
+            country: createNestedField(address.country),
           },
         },
         coordinates: {
@@ -140,7 +151,7 @@ export const createOrganization = async (data: any) => {
     return newOrganization;
   } catch (error) {
     throw new Error(
-      "No se pudo crear la organización, verifique los campos completos"
+      `No se pudo crear la organización, verifique los campos completos.  ${error}`
     );
   }
 };
@@ -152,14 +163,8 @@ const updateNestedField = (field: any) => ({
   },
 });
 
-const updateAddressField = (field: any) => ({
-  update: {
-    text: field.text,
-    state: field.state,
-  },
-});
 
-export const putDataOrganization = async (id: number, data: any) => {
+export const putDataOrganization = async (id: string, data: any) => {
   try {
     const {
       nameOrganization,
@@ -175,6 +180,29 @@ export const putDataOrganization = async (id: number, data: any) => {
       representative,
       stateRegistration,
     } = data;
+
+    // Check if organization with same RUC exists
+    const existingOrganization = await prisma.organization.findFirst({
+      where: {
+        OR: [
+          { ruc: { text: ruc.text } },
+          { email: { text: email.text } },
+          { phone: { text: phone.text } },
+          { numPreRegister: { text: parseInt(numPreRegister.text) } },
+          {
+            representative: {
+              numDoc: { text: representative.numDoc.text },
+            },
+          },
+        ],
+      },
+    });
+
+    if (existingOrganization) {
+      throw new Error(
+        "Ya existe una organización con algunos de estos datos Colocados"
+      );
+    }
 
     const updatedOrganization = await prisma.organization.update({
       where: {
@@ -196,11 +224,11 @@ export const putDataOrganization = async (id: number, data: any) => {
         },
         address: {
           update: {
-            street: updateAddressField(address.street),
-            city: updateAddressField(address.city),
-            neighborhood: updateAddressField(address.neighborhood),
-            province: updateAddressField(address.province),
-            country: updateAddressField(address.country),
+            street: updateNestedField(address.street),
+            city: updateNestedField(address.city),
+            neighborhood: updateNestedField(address.neighborhood),
+            province: updateNestedField(address.province),
+            country: updateNestedField(address.country),
           },
         },
         coordinates: {
@@ -223,16 +251,18 @@ export const putDataOrganization = async (id: number, data: any) => {
           },
         },
         stateRegistration,
-      }
+      },
     });
-    
+
     return updatedOrganization;
   } catch (error: any) {
-    throw new Error("No se pudo actualizar la organización");
+    throw new Error(
+      `No se pudo actualizar la organización, verifique los campos completos.  ${error}`
+    );
   }
 };
 
-export const patchDataOrganization = async (id: number, data: any) => {
+export const patchDataOrganization = async (id: string, data: any) => {
   try {
     const organization = await prisma.organization.findUnique({
       where: { id },
@@ -254,7 +284,6 @@ export const patchDataOrganization = async (id: number, data: any) => {
     });
     return updatedOrganization;
   } catch (error: any) {
-    console.error("Error al actualizar la organización", error);
     throw new Error("No se pudo actualizar la organización");
   }
 };
@@ -303,7 +332,7 @@ function createPrismaUpdateObject(data: any) {
   return Object.keys(updateData).length ? updateData : undefined;
 }
 
-export const deleteOrganizationData = async (id: number) => {
+export const deleteOrganizationData = async (id: string) => {
   try {
     const deletedOrganization = await prisma.organization.delete({
       where: { id },
@@ -311,7 +340,6 @@ export const deleteOrganizationData = async (id: number) => {
 
     return deletedOrganization;
   } catch (error: any) {
-    console.error("Error al eliminar la organización", error);
-    throw new Error("No se pudo eliminar la organización");
+    throw new Error("No se encontró la organización para eliminarla");
   }
 };

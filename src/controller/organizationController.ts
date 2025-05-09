@@ -7,7 +7,7 @@ import { errorHandlerServer } from "../middleware/errorHandler";
 const prisma = new PrismaClient();
 
 
-// Crear nueva organización
+// Crear nueva organización (POST)
 export const createOrganization = async (
   req: Request,
   res: Response,
@@ -77,7 +77,7 @@ export const getOrganizationById = async (
 
     // Verificar si la organización existe en la base de datos
     const organization = await prisma.organization.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       select: {
         nameOrganization: selectFields,
         ruc: selectFields,
@@ -134,13 +134,12 @@ export const updatePatchOrganization = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
-    const idOrganization = Number(id);
+    const { id } = IdSchema.parse(req.params);
     
     // Validación parcial con Zod
     const parsedData = OrganizationSchema.partial().parse(req.body);
     
-    const onUpdateOrganization = await service.patchDataOrganization(idOrganization, parsedData);
+    const onUpdateOrganization = await service.patchDataOrganization(id, parsedData);
 
     return res.status(200).json({
       message: "La organización ha sido actualizada correctamente",
@@ -167,12 +166,11 @@ export const updatePutOrganization = async (
 ) => {
   try {
     const { id } = req.params;
-    const productId = Number(id);
 
     // Validación completa con Zod
     const parsedData = OrganizationSchema.parse(req.body);
 
-    const onUpdateOrganization = await service.putDataOrganization(productId, parsedData);
+    const onUpdateOrganization = await service.putDataOrganization(id, parsedData);
     
     res.status(200).json({
       message: "La organización ha sido actualizada correctamente",
@@ -199,14 +197,12 @@ export const deleteOrganization = async (
   try {
     const { id } = IdSchema.parse(req.params); // Validación del ID
 
-    const onDeleteOrganization = await service.deleteOrganizationData(Number(id));
+    await service.deleteOrganizationData(id);
 
-    res.status(204).json({
+    res.status(200).json({
       status: 204,
-      message: `La organización con el id ${id} sido eliminada correctamente`,
       response: {
-        "message": `La organización con el id ${id} ha sido eliminada correctamente`,
-        "deletedOrganization": onDeleteOrganization
+        "message": `La organización ha sido eliminada correctamente`,
       },
     });
   } catch (error) {

@@ -1,22 +1,20 @@
-# Usa una imagen base de Node.js
-FROM node:20.17.0
+# Etapa de construcción
+FROM node:20.16.0
 
-# Establece el directorio de trabajo en /app
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia el package.json y el package-lock.json
+# Copia los archivos package.json y package-lock.json
 COPY package*.json ./
 
-# Copia el archivo schema.prisma
-COPY prisma/schema.prisma ./prisma/
-
-# Instala las dependencias y ejecuta prisma generate en una sola instrucción RUN
-RUN npm install && npx prisma generate
-
-# Copia el resto de la aplicación
+# Copia el resto del código fuente
 COPY . .
 
-# Expone el puerto en el que la aplicación se ejecutará
+# Instala todas las dependencias y genera el cliente Prisma
+RUN npm install && \
+	npx prisma generate
+
+# Expone el puerto de la aplicación
 EXPOSE 3000
 
 # Comando para ejecutar la aplicación

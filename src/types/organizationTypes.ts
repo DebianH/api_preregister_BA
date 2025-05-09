@@ -87,5 +87,5 @@ export const OrganizationSchema = z.object({
 
 // Esquema para validar IDs
 export const IdSchema = z.object({
-    id: z.string().regex(/^\d+$/, "ID incorrecto"),  // Acepta solo dígitos
+    id: z.string(), // Acepta cualquier string
 });

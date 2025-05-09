@@ -32,9 +32,9 @@ export const fetchInfoOrganization = async () => {
   }
   
 
-export function fetchInfoOrganizationById(id: number) {
+export async function fetchInfoOrganizationById(id: string) {
   try {
-    return prisma.organization.findUnique({
+    return await prisma.organization.findUnique({
       where: {
         id: id
       },
@@ -59,7 +59,6 @@ export function fetchInfoOrganizationById(id: number) {
       }
     })
   } catch (error: any) {
-    console.error("Error al obtener los datos del personal de la Organizacion", error);
     throw new Error("No se pudo obtener los datos del personal de la Organizacion");
   }
 }

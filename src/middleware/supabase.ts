@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const idContextSupabase = "supabase-context";
 

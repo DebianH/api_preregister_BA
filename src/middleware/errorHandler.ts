@@ -58,6 +58,8 @@ export const errorHandler = (
   });
 };
 
+
+// Controlador del servidor por ZOD, para manejar errores de validación
 export const errorHandlerServer = (
   error: unknown,
   res: Response,
@@ -68,13 +70,26 @@ export const errorHandlerServer = (
   }
 
   if (error instanceof ZodError) {
-    // Error de validación de Zod
-    res.status(400).json({
-      status: 400,
-      message: "El servidor no pudo procesar la solicitud",
-      response: "Ruta no válida",
+    const errores = error.errors;
+    
+    const erroresFiltrados = errores.map(err => {
+  
+      return {
+        // received: err.message.split("received ")[1]?.replace(/['"]/g, "") || "unknown",
+        // path: err.path.join("."),
+        message: err.message.includes("Invalid enum value") 
+        ? `Invalid value. Expected 'PENDING', received '${err.message.split("received ")[1]?.replace(/['"]/g, "")}'`
+        : err.message,
+      };
     });
-    next(error);
-  }
 
+
+    return res.status(400).json({
+      status: 400,
+      message: `Error de Syntaxis en la petición`,
+      errors: erroresFiltrados,
+      response: "El servidor no pudo procesar la solicitud",
+    });
+  }
+  next(error);
 };

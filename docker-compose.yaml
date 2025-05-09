@@ -8,6 +8,6 @@ services:
       - '3000:3000'
     env_file:
       - .env
-    volumes:
-      - .:/app
+    # volumes:
+    #   - .:/app
     command: npm start
